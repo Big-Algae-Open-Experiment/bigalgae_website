@@ -1,0 +1,20 @@
+Thank you for validating bioreactor {{ reactor_id }}!.
+
+You can now begin experimenting!
+
+Before you can do so, you'll need to register a new experiment.
+
+Your experiment validation code is {{ experiment_validation_code }}.
+Keep this code secret, as otherwise anyone will be able to create new experiments for your bioreactor.
+
+Your upload code is {{ upload_code }}.
+This code must be displayed near your bioreactor. When someone takes a photo of the calibration slip, they must enter this code to upload the photo.
+This code is to stop people navigating to your experiment pages and uploading photos which may disrupt your results.
+
+If you have any questions, please contact us!
+
+Many thanks,
+
+The Big Algae Open Experiment Team
+
+http://bigalgae.com 

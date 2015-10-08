@@ -1,0 +1,13 @@
+Thank you for registering bioreactor {{ reactor_id }}!.
+
+In order to confirm that you registered the bioreactor, please click on the following validation link:
+
+{{ validation_link }}
+
+If you have not recently registered a bioreactor to take part in the Big Algae Open Experiment, please ignore this e-mail.
+
+Many thanks,
+
+The Big Algae Open Experiment Team
+
+http://bigalgae.com

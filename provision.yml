@@ -1,0 +1,102 @@
+---
+
+- name: provision flask web server
+  hosts: vagrant_centos7
+  
+  tasks: 
+    #- name: update the system
+      #yum: name=*
+           #state=latest
+
+    - name: add the epel repository
+      yum: name=epel-release
+           state=present                   
+                   
+    - name: add the mongo repository
+      copy: src=server_configuration_files/mongodb-org-2.4.repo
+            dest=/etc/yum.repos.d
+                   
+    - name: install necessary software
+      yum: name={{ item }}
+           state=present
+      with_items:
+        - httpd
+        - mod_wsgi
+        - firewalld
+        - python-pip
+        - python-virtualenv
+        - mongodb-org
+        - wkhtmltopdf
+        - xorg-x11-server-Xvfb
+        - urw-fonts
+    
+    - name: start firewalld
+      service: name=firewalld
+               enabled=yes
+               state=started
+    
+    - name: start apache
+      service: name=httpd
+               enabled=yes
+               state=started
+            
+    - name: open up http port
+      firewalld: service=http
+                 permanent=yes
+                 state=enabled
+      notify: restart firewalld
+
+    - name: create a python virtual environment
+      command: virtualenv /var/www/html/baoe-app/env
+            
+    - name: install necessary python packages
+      pip: name={{ item }}
+           virtualenv=/var/www/html/baoe-app/env
+      with_items:
+        - pymongo
+        - flask
+        - markdown
+        - pdfkit
+            
+    - name: copy across website files
+      copy: src=baoe-app
+            dest=/var/www/html/baoe-app/app
+            
+    - name: start mongodb
+      service: name=mongod
+               enabled=yes
+               state=started
+            
+    - name: copy across wsgi file
+      copy: src=app.wsgi
+            dest=/var/www/html/baoe-app/
+
+    - name: this error http://ca3.php.net/manual/en/mongo.installation.php#mongo.installation.fedora
+      command: /usr/sbin/setsebool -P httpd_can_network_connect 1
+      notify: restart apache
+      
+    - name: this error https://github.com/wkhtmltopdf/wkhtmltopdf/issues/2267
+      command: /usr/sbin/setsebool -P httpd_execmem on
+      notify: restart apache
+      
+    - name: copy across apache configuration file
+      copy: src=server_configuration_files/baoe-app.conf
+            dest=/etc/httpd/conf.d/baoe-app.conf
+      notify: restart apache
+            
+    - name: copy across database initialisation script
+      script: initialise_db.py
+            
+    - name: create virtualx environment
+      script: server_configuration_files/setup_virtualx_env.sh
+              creates=/usr/local/bin/wkhtmltopdf
+              
+  handlers:
+  
+    - name: restart firewalld
+      service: name=firewalld
+               state=restarted
+               
+    - name: restart apache
+      service: name=httpd
+               state=restarted

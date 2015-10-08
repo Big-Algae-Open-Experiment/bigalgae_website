@@ -1,0 +1,24 @@
+{% extends "Base.html" %}
+{% block title %}Reactor {{ reactor['_id'] }} - Big Algae Open Experiment{% endblock %}
+{% block head %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/qrcode.min.js') }}" charset="utf-8"></script>
+{% endblock %}
+{% block body %}
+    {{ super() }}
+    <h2>Reactor {{ reactor['_id'] }}</h2>
+    <h4>Location {{ reactor['name'] }}</h4>
+    <h4>{{reactor['longitude']}} {{reactor['latitude']}}</h4>
+    <h4>Experiments</h4>
+    <ul>
+    {% for experiment in reactor['experiments'] %}
+        <li><a href="{{ url_for('experiment', reactor_id=reactor['_id'], experiment_id=experiment['id']) }}">Experiment {{ experiment['id'] }}</a></li>
+    {% endfor %}
+    </ul>
+    <div id='qrcode'></div>
+    <script type="text/javascript">
+        new QRCode(document.getElementById("qrcode"),
+                   window.location.href);
+    </script>
+
+{% endblock %}

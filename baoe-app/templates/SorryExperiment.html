@@ -1,0 +1,6 @@
+{% extends "Base.html" %}
+{% block title %}Sorry - Big Algae Open Experiment{% endblock %}
+{% block body %}
+    {{ super() }}
+    <h2>Sorry, experiment {{experiment_id}} doesn't exist for bioreactor {{reactor_id}}.</h2>
+{% endblock %}

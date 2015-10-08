@@ -1,0 +1,8 @@
+{% extends "Base.html" %}
+{% block title %}Successful Validation - Big Algae Open Experiment{% endblock %}
+{% block body %}
+    {{ super() }}
+    <h2>You have successfully registered a bioreactor!</h2>
+    
+    <h4>Your reactor page can be accessed <a href="{{ url_for('reactor', reactor_id=reactor_id) }}">here</a></h4>
+{% endblock %}
