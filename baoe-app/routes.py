@@ -28,8 +28,8 @@ def returnNewID(global_variable_collection):
                                                      new=True)
     return(str(new['seq']).zfill(4))
 
-UPLOAD_FOLDER = 'uploaded_images/'
-ALLOWED_EXTENSIONS = set(['jpeg', 'svg', 'jpg', 'txt'])
+UPLOAD_FOLDER = '/var/www/html/baoe-app/images'
+ALLOWED_EXTENSIONS = set(['jpeg', 'jpg', 'png', 'JPG', 'JPEG'])
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -192,8 +192,13 @@ def upload():
     if request.method == 'GET':
         return(render_template('Upload.html'))
     if request.method == 'POST':
-        file = request.files['upload_picture']
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        file_upload = request.files['upload_picture']
+        if file_upload and allowed_file(file_upload.filename):
+            filename = secure_filename(file_upload.filename)
+            #present = True
+            #saved_filename = ''
+            #while not present:
+                #saved_filename = bigalgae.generate_validation_key(32) + '.' + filename.rsplit('.', 1)[1]
+                #present = os.path.isfile(os.path.join(app.config['UPLOAD_FOLDER'], saved_filename))
+            file_upload.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return redirect(url_for('about'))

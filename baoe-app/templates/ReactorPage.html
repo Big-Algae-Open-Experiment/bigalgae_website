@@ -15,6 +15,7 @@
         <li><a href="{{ url_for('experiment', reactor_id=reactor['_id'], experiment_id=experiment['id']) }}">Experiment {{ experiment['id'] }}</a></li>
     {% endfor %}
     </ul>
+    <a href="{{ url_for('register_experiment', reactor_id=reactor['_id']) }}" class="btn btn-default" role="button">Register New Experiment</a>
     <div id='qrcode'></div>
     <script type="text/javascript">
         new QRCode(document.getElementById("qrcode"),

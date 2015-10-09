@@ -59,7 +59,7 @@
         - pdfkit
             
     - name: copy across website files
-      copy: src=baoe-app
+      copy: src=baoe-app/
             dest=/var/www/html/baoe-app/app
             
     - name: start mongodb
@@ -91,6 +91,14 @@
       script: server_configuration_files/setup_virtualx_env.sh
               creates=/usr/local/bin/wkhtmltopdf
               
+    - name: create image folder
+      command: mkdir -p /var/www/html/baoe-app/images
+    
+    - name: change context of image folder
+      command: chcon -R -t httpd_sys_rw_content_t /var/www/html/baoe-app/images
+              
+    - name: change owner of image folder
+      command: chown -R apache:apache /var/www/html/baoe-app/images
   handlers:
   
     - name: restart firewalld

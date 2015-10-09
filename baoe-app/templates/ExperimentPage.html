@@ -6,7 +6,7 @@
 {% endblock %}
 {% block body %}
     {{ super() }}
-    <h2>Reactor {{ reactor_id }}</h2>
+    <a href="{{ url_for('reactor', reactor_id=reactor_id) }}"><h2>Reactor {{ reactor_id }}</h2></a>
     <h4>Experiment {{ experiment_id }}</h4>
     <h4>Species: {{ species }}</h4>
     <div id='qrcode'></div>

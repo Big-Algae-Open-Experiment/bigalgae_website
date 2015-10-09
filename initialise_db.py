@@ -1,7 +1,17 @@
 #!/bin/python
 
-from pymongo import MongoClient
+try:
+    from pymongo import MongoClient
+except ImportError:
+    import os
 
+    PROJECT_DIR = '/var/www/html/baoe-app'
+
+    activate_this = os.path.join(PROJECT_DIR, 'env', 'bin', 'activate_this.py')
+    execfile(activate_this, dict(__file__=activate_this))
+    from pymongo import MongoClient
+    
+    
 client = MongoClient()
 
 DB_NAME = 'bigalgae'
