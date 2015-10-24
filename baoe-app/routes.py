@@ -1,7 +1,7 @@
 from flask import Flask, url_for, request, render_template, redirect
 from app import app
 from werkzeug import secure_filename
-import os
+import os, errno
 from pymongo import MongoClient, errors
 # Contains the functions required to process uploaded images
 import bigalgae
@@ -195,10 +195,17 @@ def upload():
         file_upload = request.files['upload_picture']
         if file_upload and allowed_file(file_upload.filename):
             filename = secure_filename(file_upload.filename)
-            #present = True
-            #saved_filename = ''
-            #while not present:
-                #saved_filename = bigalgae.generate_validation_key(32) + '.' + filename.rsplit('.', 1)[1]
-                #present = os.path.isfile(os.path.join(app.config['UPLOAD_FOLDER'], saved_filename))
-            file_upload.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            present = True
+            while present:
+                try:
+                    saved_filename = bigalgae.generate_validation_key(32) + '.' + filename.rsplit('.', 1)[1]
+                    fd = os.open(os.path.join(app.config['UPLOAD_FOLDER'], saved_filename), os.O_WRONLY | os.O_CREAT | os.O_EXCL)
+                    present = False
+                except OSError, e:
+                    if e.errno == errno.EEXIST:
+                        present = True
+                    else:
+                        raise
+            f = os.fdopen(fd, 'w')
+            file_upload.save(f)
             return redirect(url_for('about'))
