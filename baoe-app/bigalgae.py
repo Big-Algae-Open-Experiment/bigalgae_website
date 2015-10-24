@@ -18,7 +18,7 @@ def generate_validation_key(N):
 
 def send_email(message, recipient_address):
     me = 'bigalgaeopenexperiment@gmail.com'
-    password = 'algaearegreat'
+    password = get_email_password()
     
     message['From'] = me
     message['To'] = recipient_address
@@ -31,3 +31,7 @@ def send_email(message, recipient_address):
     email_server.quit()
         
     return(True)
+    
+def get_email_password():
+    with open('/var/www/html/baoe-app/.google_password') as f:
+        return(f.readline().strip())
