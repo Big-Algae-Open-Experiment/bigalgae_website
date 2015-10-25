@@ -171,26 +171,21 @@ def validate(reactor_id):
                                  
             return(render_template('SuccessfulValidation.html', reactor_id = reactor_id))
 
-@app.route('/reactor/<reactor_id>/experiment/<experiment_id>')
+@app.route('/reactor/<reactor_id>/experiment/<experiment_id>', methods=['GET', 'POST'])
 def experiment(reactor_id, experiment_id):
     db = client[DB_NAME]
     reactors = db[BIOREACTOR_COLLECTION]
-    exp_search = [res for res in reactors.find({'_id': reactor_id, 'experiments': {'$elemMatch': {'id': experiment_id}}})]
-    if len(exp_search) == 0:
-        return(render_template('SorryExperiment.html', \
-                               reactor_id=reactor_id,  \
-                               experiment_id=experiment_id))
-    else:
-        experiment_dict = exp_search[0]['experiments'][int(experiment_id)-1]
-        return(render_template('ExperimentPage.html', \
-                               reactor_id=reactor_id, \
-                               experiment_id=experiment_id, \
-                               species=experiment_dict['species']))
-
-@app.route('/upload', methods=['GET', 'POST'])
-def upload():
     if request.method == 'GET':
-        return(render_template('Upload.html'))
+        exp_search = [res for res in reactors.find({'_id': reactor_id, 'experiments': {'$elemMatch': {'id': experiment_id}}})]
+        if len(exp_search) == 0:
+            return(render_template('SorryExperiment.html', \
+                                reactor_id=reactor_id,  \
+                                experiment_id=experiment_id))
+        else:
+            experiment_dict = exp_search[0]['experiments'][int(experiment_id)-1]
+            return(render_template('ExperimentPage.html', \
+                                reactor_id=reactor_id, \
+                                experiment_dict=experiment_dict))
     if request.method == 'POST':
         file_upload = request.files['upload_picture']
         if file_upload and allowed_file(file_upload.filename):
@@ -208,4 +203,17 @@ def upload():
                         raise
             f = os.fdopen(fd, 'w')
             file_upload.save(f)
-            return redirect(url_for('about'))
+            
+            db = client[DB_NAME]
+            reactors = db[BIOREACTOR_COLLECTION]
+            reactor = reactors.find_and_modify({'_id': reactor_id, \
+                                      'experiments': {'$elemMatch': {'id': experiment_id}}}, \
+                                     {'$push': {'experiments.$.measurements': \
+                                        {'file_name': saved_filename}
+                                     }}, new=True)
+                                     
+            f.close()
+            experiment_dict = reactor['experiments'][int(experiment_id)-1]
+            return(render_template('ExperimentPage.html', \
+                                reactor_id=reactor_id, \
+                                experiment_dict=experiment_dict))

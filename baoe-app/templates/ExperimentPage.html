@@ -1,5 +1,5 @@
 {% extends "Base.html" %}
-{% block title %}Experiment {{ experiment_id }} - Big Algae Open Experiment{% endblock %}
+{% block title %}Experiment {{ experiment_dict['id'] }} - Big Algae Open Experiment{% endblock %}
 {% block head %}
     {{ super() }}
     <script src="{{ url_for('static', filename='js/qrcode.min.js') }}" charset="utf-8"></script>
@@ -7,12 +7,25 @@
 {% block body %}
     {{ super() }}
     <a href="{{ url_for('reactor', reactor_id=reactor_id) }}"><h2>Reactor {{ reactor_id }}</h2></a>
-    <h4>Experiment {{ experiment_id }}</h4>
-    <h4>Species: {{ species }}</h4>
+    <h4>Experiment {{ experiment_dict['id'] }}</h4>
+    <h4>Species: {{ experiment_dict['species'] }}</h4>
+    <h4>Number of Measurement: {{ experiment_dict['measurements']|length }}</h4>
+    {% for measurement in experiment_dict['measurements'] %}
+        <li>{{ measurement['file_name'] }}</li>
+    {% endfor %}
     <div id='qrcode'></div>
     <script type="text/javascript">
         new QRCode(document.getElementById("qrcode"),
                    window.location.href);
     </script>
+    <h2>Upload</h2>
+    <form enctype="multipart/form-data" action="" method="post">
+        <label class="btn btn-primary" for="upload_picture">
+            <input type='file' style="display:none;" capture='camera' accept='image/*' name='upload_picture' id='upload_picture'>
+        Upload Image    
+        </label>
+        <center><button type="submit" class="btn btn-success">SUBMIT</button></center>
+    </form>
+
 
 {% endblock %}
