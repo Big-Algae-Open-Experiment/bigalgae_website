@@ -60,6 +60,7 @@
         - piexif
         - cv2
         - sklearn
+        - exifread
             
     - name: copy across website files
       copy: src=../baoe-app/
