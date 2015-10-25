@@ -58,6 +58,8 @@
         - markdown
         - pdfkit
         - piexif
+        - cv2
+        - sklearn
             
     - name: copy across website files
       copy: src=../baoe-app/
