@@ -13,7 +13,7 @@
            state=present                   
                    
     - name: add the mongo repository
-      copy: src=server_configuration_files/mongodb-org-2.4.repo
+      copy: src=../server_configuration_files/mongodb-org-2.4.repo
             dest=/etc/yum.repos.d
                    
     - name: install necessary software
@@ -59,7 +59,7 @@
         - pdfkit
             
     - name: copy across website files
-      copy: src=baoe-app/
+      copy: src=../baoe-app/
             dest=/var/www/html/baoe-app/app
             
     - name: start mongodb
@@ -68,11 +68,11 @@
                state=started
             
     - name: copy across wsgi file
-      copy: src=app.wsgi
+      copy: src=../server_configuration_files/app.wsgi
             dest=/var/www/html/baoe-app/
 
     - name: copy across Google Password file
-      copy: src=.google_password
+      copy: src=../.google_password
             dest=/var/www/html/baoe-app/
             
     - name: this error http://ca3.php.net/manual/en/mongo.installation.php#mongo.installation.fedora
@@ -84,15 +84,12 @@
       notify: restart apache
       
     - name: copy across apache configuration file
-      copy: src=server_configuration_files/baoe-app.conf
+      copy: src=../server_configuration_files/baoe-app.conf
             dest=/etc/httpd/conf.d/baoe-app.conf
       notify: restart apache
             
-    - name: copy across database initialisation script
-      script: initialise_db.py
-            
     - name: create virtualx environment
-      script: server_configuration_files/setup_virtualx_env.sh
+      script: ../server_configuration_files/setup_virtualx_env.sh
               creates=/usr/local/bin/wkhtmltopdf
               
     - name: create image folder

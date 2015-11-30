@@ -1,0 +1,14 @@
+---
+
+- name: provision flask web server
+  hosts: vagrant_centos7
+  
+  tasks: 
+    - name: copy across backups folder
+      synchronize: src=../backups
+                   dest=/var/www/html/baoe-app
+                   archive=yes
+                   rsync_path="sudo rsync"
+    
+    - name: restore the database
+      script: ../server_configuration_files/mongorestore.sh

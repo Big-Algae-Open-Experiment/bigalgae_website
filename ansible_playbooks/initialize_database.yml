@@ -1,0 +1,9 @@
+---
+
+- name: initialize the database of the big algae open experiment website
+  hosts: vagrant_centos7
+  
+  tasks: 
+    - name: run the database initialisation script
+      script: ../server_configuration_files/initialise_db.py
+            
