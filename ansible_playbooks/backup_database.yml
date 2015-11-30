@@ -4,9 +4,6 @@
   hosts: vagrant_centos7
   
   tasks: 
-    - name: run mongodump script
-      script: ../server_configuration_files/mongodump_backup.sh
-                   
     - name: copy across backups folder
       synchronize: mode=pull
                    src=/var/www/html/baoe-app/backups

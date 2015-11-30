@@ -100,6 +100,20 @@
               
     - name: change owner of image folder
       command: chown -R apache:apache /var/www/html/baoe-app/images
+      
+    - name: copy across mongodb backup script
+      copy: src=../server_configuration_files/mongodump_backup.sh
+            dest=/var/www/html/baoe-app/
+
+    - name: make the mongodb backup script executable
+      command: chmod +x /var/www/html/baoe-app/mongodump_backup.sh
+
+    - name: create a cron job which performs a backup of the database every 12 hours
+      cron: name="backup database"
+            job="/var/www/html/baoe-app/mongodump_backup.sh"
+            minute="0"
+            hour="*/12"
+
   handlers:
   
     - name: restart firewalld
