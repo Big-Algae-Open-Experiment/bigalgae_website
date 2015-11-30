@@ -176,45 +176,63 @@ def validate(reactor_id):
 def experiment(reactor_id, experiment_id):
     db = client[DB_NAME]
     reactors = db[BIOREACTOR_COLLECTION]
-    if request.method == 'GET':
-        exp_search = [res for res in reactors.find({'_id': reactor_id, 'experiments': {'$elemMatch': {'id': experiment_id}}})]
-        if len(exp_search) == 0:
-            return(render_template('SorryExperiment.html', \
-                                reactor_id=reactor_id,  \
-                                experiment_id=experiment_id))
-        else:
-            experiment_dict = exp_search[0]['experiments'][int(experiment_id)-1]
-            return(render_template('ExperimentPage.html', \
-                                reactor_id=reactor_id, \
-                                experiment_dict=experiment_dict))
-    if request.method == 'POST':
-        file_upload = request.files['upload_picture']
-        if file_upload and allowed_file(file_upload.filename):
-            filename = secure_filename(file_upload.filename)
-            present = True
-            while present:
-                try:
-                    saved_filename = bigalgae.generate_validation_key(32) + '.' + filename.rsplit('.', 1)[1]
-                    fd = os.open(os.path.join(app.config['UPLOAD_FOLDER'], saved_filename), os.O_WRONLY | os.O_CREAT | os.O_EXCL)
-                    present = False
-                except OSError, e:
-                    if e.errno == errno.EEXIST:
-                        present = True
-                    else:
-                        raise
-            f = os.fdopen(fd, 'w')
-            file_upload.save(f)
-            
-            db = client[DB_NAME]
-            reactors = db[BIOREACTOR_COLLECTION]
-            reactor = reactors.find_and_modify({'_id': reactor_id, \
-                                      'experiments': {'$elemMatch': {'id': experiment_id}}}, \
-                                     {'$push': {'experiments.$.measurements': \
-                                        {'file_name': saved_filename}
-                                     }}, new=True)
-                                     
-            f.close()
-            experiment_dict = reactor['experiments'][int(experiment_id)-1]
-            return(render_template('ExperimentPage.html', \
-                                reactor_id=reactor_id, \
-                                experiment_dict=experiment_dict))
+    exp_search = [res for res in reactors.find({'_id': reactor_id, 'experiments': {'$elemMatch': {'id': experiment_id}}})]
+    if len(exp_search) == 0:
+        return(render_template('SorryExperiment.html', \
+                            reactor_id=reactor_id,  \
+                            experiment_id=experiment_id))
+    else:
+        experiment_dict = exp_search[0]['experiments'][int(experiment_id)-1]
+        if request.method == 'GET':
+                return(render_template('ExperimentPage.html', \
+                                    reactor_id=reactor_id, \
+                                    experiment_dict=experiment_dict,
+                                    incorrect_upload_code=False,
+                                    twitter_thanks=False))
+        if request.method == 'POST':
+            file_upload = request.files['upload_picture']
+            upload_code_provided = request.form['upload_validation']
+            cell_count = request.form['cell_count']
+            od680 = request.form['od680']
+            od750 = request.form['od750']
+            if exp_search[0]['upload_code'] == upload_code_provided:
+                if file_upload and allowed_file(file_upload.filename):
+                    filename = secure_filename(file_upload.filename)
+                    present = True
+                    while present:
+                        try:
+                            saved_filename = bigalgae.generate_validation_key(32) + '.' + filename.rsplit('.', 1)[1]
+                            fd = os.open(os.path.join(app.config['UPLOAD_FOLDER'], saved_filename), os.O_WRONLY | os.O_CREAT | os.O_EXCL)
+                            present = False
+                        except OSError, e:
+                            if e.errno == errno.EEXIST:
+                                present = True
+                            else:
+                                raise
+                    f = os.fdopen(fd, 'w')
+                    file_upload.save(f)
+                    
+                    db = client[DB_NAME]
+                    reactors = db[BIOREACTOR_COLLECTION]
+                    reactor = reactors.find_and_modify({'_id': reactor_id, \
+                                            'experiments': {'$elemMatch': {'id': experiment_id}}}, \
+                                            {'$push': {'experiments.$.measurements': \
+                                                {'file_name': saved_filename , \
+                                                'cell_count': cell_count, \
+                                                'od680': od680, \
+                                                'od750': od750}
+                                            }}, new=True)
+                                            
+                    f.close()
+                    experiment_dict = reactor['experiments'][int(experiment_id)-1]
+                    return(render_template('ExperimentPage.html', \
+                                        reactor_id=reactor_id, \
+                                        experiment_dict=experiment_dict,
+                                        incorrect_upload_code=False,
+                                        twitter_thanks=True))
+            else:
+                    return(render_template('ExperimentPage.html', \
+                                        reactor_id=reactor_id, \
+                                        experiment_dict=experiment_dict,
+                                        incorrect_upload_code=True,
+                                        twitter_thanks=False))

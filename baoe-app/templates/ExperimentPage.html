@@ -6,26 +6,81 @@
 {% endblock %}
 {% block body %}
     {{ super() }}
-    <a href="{{ url_for('reactor', reactor_id=reactor_id) }}"><h2>Reactor {{ reactor_id }}</h2></a>
-    <h4>Experiment {{ experiment_dict['id'] }}</h4>
-    <h4>Species: {{ experiment_dict['species'] }}</h4>
-    <h4>Number of Measurement: {{ experiment_dict['measurements']|length }}</h4>
-    {% for measurement in experiment_dict['measurements'] %}
-        <li>{{ measurement['file_name'] }}</li>
-    {% endfor %}
-    <div id='qrcode'></div>
-    <script type="text/javascript">
-        new QRCode(document.getElementById("qrcode"),
-                   window.location.href);
-    </script>
-    <h2>Upload</h2>
-    <form enctype="multipart/form-data" action="" method="post">
-        <label class="btn btn-primary" for="upload_picture">
-            <input type='file' style="display:none;" capture='camera' accept='image/*' name='upload_picture' id='upload_picture'>
-        Upload Image    
-        </label>
-        <center><button type="submit" class="btn btn-success">SUBMIT</button></center>
-    </form>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <a href="{{ url_for('reactor', reactor_id=reactor_id) }}"><h2>Reactor {{ reactor_id }}</h2></a>
+                <h4>Experiment {{ experiment_dict['id'] }}</h4>
+                <h4>Species: {{ experiment_dict['species'] }}</h4>
+                <h4>Number of Measurement: {{ experiment_dict['measurements']|length }}</h4>
+                <ul>
+                    {% for measurement in experiment_dict['measurements'] %}
+                        <li>{{ measurement['file_name'] }}
+                        <ul>
+                            <li>Cell count: {{ measurement['cell_count'] }}</li>
+                            <li>OD680: {{ measurement['od680'] }}</li>
+                            <li>OD750: {{ measurement['od750'] }}</li>
+                        </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div id='qrcode'></div>
+                <script type="text/javascript">
+                    new QRCode(document.getElementById("qrcode"),
+                            window.location.href);
+                </script>
+            </div> 
+            <div class="col-md-6">
+                <h2>Upload</h2>
+                {% if incorrect_upload_code %}
+                    <p>Sorry, your upload code was incorrect, please try again.</p>
+                {% endif %}
+                {% if twitter_thanks %}
+                    <p>Thanks so much for submitting a measurement! Share this on <a href="https://twitter.com/">Twitter</a></p>
+                {% endif %}
+                <form enctype="multipart/form-data" action="" method="post">
+                    <div class="form-group">
+                        <label class="btn btn-primary" for="upload_picture">
+                            <input type='file' style="display:none;" capture='camera' accept='image/*' name='upload_picture' id='upload_picture' required>
+                        Upload Image    
+                        </label>
+                    </div>
 
+                    <div class="form-group">
+                        <label for="upload_validation">4 digit Upload Code</label>
+                        <input type="name" class="form-control" name="upload_validation" id="upload_validation" required>
+                    </div>
+
+                    <div class="panel-group">
+                        <div class="panel panel-default">
+                            <div data-toggle="collapse" data-target="#advanced_measurements" class="panel-heading">
+                                <h4 class="panel-title">Advanced Measurements</h4>
+                            </div>
+                            <div id="advanced_measurements" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <label for="cell_count">Cell count (cells / ml)</label>
+                                        <input type="name" class="form-control" name="cell_count" id="cell_count">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cell_count">Optical density 680nm</label>
+                                        <input type="name" class="form-control" name="od680" id="od680">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cell_count">Optical density 750nm</label>
+                                        <input type="name" class="form-control" name="od750" id="od750">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <center><button type="submit" class="btn btn-success">SUBMIT</button></center>
+                </form>
+            </div> 
+        </div>
+    </div>
 
 {% endblock %}
