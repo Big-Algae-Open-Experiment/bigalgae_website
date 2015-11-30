@@ -7,7 +7,8 @@
 {% block body %}
     {{ super() }}
     <h2>Reactor {{ reactor['_id'] }}</h2>
-    <h4>Location {{ reactor['name'] }}</h4>
+    <h4>Name {{ reactor['name'] }}</h4>
+    <h4>Location {{ reactor['location'] }}</h4>
     <h4>{{reactor['longitude']}} {{reactor['latitude']}}</h4>
     <h4>Experiments</h4>
     <ul>

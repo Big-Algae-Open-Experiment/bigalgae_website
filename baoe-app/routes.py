@@ -71,6 +71,7 @@ def register():
                 
                 reactors.insert({'_id': id_str, \
                                 'name': user_data['name'], \
+                                'location': user_data['location'], \
                                 'email': user_data['email'], \
                                 'latitude': user_data['latitude'], \
                                 'longitude': user_data['longitude'], \

@@ -169,11 +169,13 @@
         }
     
         var email = $('#email').val();
-    
+        var name = $('#name').val();
+
         $.ajax({
         url: "{{ url_for('register') }}", 
         type: "POST",
-        data: JSON.stringify({"name" : selectedPlace.name,
+        data: JSON.stringify({"name": name,
+                              "location" : selectedPlace.name,
                               "email" : email,
                               "longitude" : selectedPlace.geometry.location.lng(),
                               "latitude" : selectedPlace.geometry.location.lat()}),
@@ -209,6 +211,10 @@
             <div class="col-md-6">            
                 <form id="form" target="_self" onsubmit="" action="javascript: submitForm()">
                     <div class="form-group">
+                        <label class="control-label" for="name">Team Name</label>
+                        <input type="name" class="form-control" name="name" id="name" required />
+                    </div>
+                    <div class="form-group">
                         <label class="control-label" for="map_input">Search for your school or institute</label>
                         <input type="name" class="form-control" name="map_input" id="map_input" required />
                     </div>
@@ -221,7 +227,6 @@
                         <label class="control-label" for="email">Email</label>
                         <input type="email" class="form-control" name="email" id="email" required />
                     </div>
-                
                     <center><button type="submit" class="btn btn-success">SUBMIT</button></center>
                 </form>                         
             </div> 
