@@ -2,25 +2,112 @@
 {% block title %}Reactor {{ reactor['_id'] }} - Big Algae Open Experiment{% endblock %}
 {% block head %}
     {{ super() }}
+    <style type="text/css">
+        #map {
+            height: 400px;
+        }
+    </style>
+    <script>
+        initMap = function() {
+            var location_position = {lat: {{reactor['latitude']}}, lng: {{reactor['longitude']}}};
+        
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: location_position,
+                zoom: 14,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                disableDefaultUI: true
+            });
+            
+            new google.maps.Marker({
+                    map: map,
+                    title: "{{ reactor['location'] }}",
+                    position: location_position
+            });
+            
+        }
+    </script>
+    <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA2PJtUfLZryy0ITEfJBzeRFAJWwDSPntk&callback=initMap">
+    </script>
     <script src="{{ url_for('static', filename='js/qrcode.min.js') }}" charset="utf-8"></script>
 {% endblock %}
 {% block body %}
     {{ super() }}
-    <h2>Reactor {{ reactor['_id'] }}</h2>
-    <h4>Name {{ reactor['name'] }}</h4>
-    <h4>Location {{ reactor['location'] }}</h4>
-    <h4>{{reactor['longitude']}} {{reactor['latitude']}}</h4>
-    <h4>Experiments</h4>
-    <ul>
-    {% for experiment in reactor['experiments'] %}
-        <li><a href="{{ url_for('experiment', reactor_id=reactor['_id'], experiment_id=experiment['id']) }}">Experiment {{ experiment['id'] }}</a></li>
-    {% endfor %}
-    </ul>
-    <a href="{{ url_for('register_experiment', reactor_id=reactor['_id']) }}" class="btn btn-default" role="button">Register New Experiment</a>
-    <div id='qrcode'></div>
-    <script type="text/javascript">
-        new QRCode(document.getElementById("qrcode"),
-                   window.location.href);
-    </script>
+    
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-md-9">
+                <h2>Reactor {{ reactor['_id'] }}</h2>
+            </div> 
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div id="map"></div>
+            </div>
+            <div class="col-md-6">            
+                <h4>Team name: {{ reactor['name'] }}</h4>
+                <h4>Location: {{ reactor['location'] }}</h4>
+                <h4>Experiments</h4>
+                <ul>
+                {% for experiment in reactor['experiments'] %}
+                    <li><a href="{{ url_for('experiment', reactor_id=reactor['_id'], experiment_id=experiment['id']) }}">Experiment {{ experiment['id'] }}</a></li>
+                {% endfor %}
+                </ul>
+                <a href="{{ url_for('register_experiment', reactor_id=reactor['_id']) }}" class="btn btn-primary" role="button">Register New Experiment</a>
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div data-toggle="collapse" data-parent="#accordion" data-target="#register_experiment" class="panel-heading">
+                            <h4 class="panel-title">Register New Experiment (Click here to expand)</h4>
+                        </div>
+                        <div id="register_experiment" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                {% if incorrect_password %}
+                                    <p>Sorry, your experiment validation code was incorrect, please try again.</p>
+                                {% endif %}
+                                <form id="form" method="post">
+                                    <div class="form-group">
+                                        <label for="algae_dropdown">Which algal species are you growing?</label>
+                                        <select class="form-control" name="algae_dropdown" id="algae_dropdown">
+                                            {% for species in algal_species %}
+                                                <option>{{ species }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="experiment_validation">Experiment Validation Code</label>
+                                        <input type="password" class="form-control" name="experiment_validation" id="experiment_validation">
+                                    </div>
+                                    <center><button type="submit" class="btn btn-success">SUBMIT</button></center>
+                                </form>                         
+                            </div>
+                        </div>
+                        
+                        <div data-toggle="collapse" data-parent="#accordion" data-target="#qr_code" class="panel-heading">
+                            <h4 class="panel-title">Display QR Code (Click here to expand)</h4>
+                        </div>
+                        <div id="qr_code" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <p>This QR code links to this reactor page</p>
+                                <div id='qrcode'></div>
+                                <script type="text/javascript">
+                                    new QRCode(document.getElementById("qrcode"),
+                                            window.location.href);
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div> 
+        </div>
+    </div>
+    
+    
+    
+    
+    
+    
 
 {% endblock %}

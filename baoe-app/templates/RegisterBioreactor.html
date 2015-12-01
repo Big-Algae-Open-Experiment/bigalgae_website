@@ -12,34 +12,15 @@
         // feature. People can enter geographical searches. The search box will return a
         // pick list containing a mix of places and predicted search terms.
 
-        function initAutocomplete() {
-        map = new google.maps.Map(document.getElementById('map'), {    //// GLOBAL
-            center: {lat: 54.468057, lng: -3.038273},
-            zoom: 5,
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            disableDefaultUI: true
-        });
-
-        // Create the search box and link it to the UI element.
-        var input = document.getElementById('map_input');
-        searchBox = new google.maps.places.SearchBox(input);  //// GLOBAL
-
-        // Bias the SearchBox results towards current map's viewport.
-        map.addListener('bounds_changed', function() {
-            searchBox.setBounds(map.getBounds());
-        });
-
-        markers = [];    //// GLOBAL
-        // [START region_getplaces]
-        // Listen for the event fired when the user selects a prediction and retrieve
-        // more details for that place.
-        searchBox.addListener('places_changed', function() {
+        function returnPlaces() {
             var places = searchBox.getPlaces();
-
             if (places.length == 0) {
-                return;
+                return(places);
             }
-
+            return(places);
+        }
+        
+        function addMarkersToMap(places) {
             // Clear out the old markers.
             markers.forEach(function(marker) {
                 marker.setMap(null);
@@ -49,18 +30,10 @@
             // For each place, get the icon, name and location.
             var bounds = new google.maps.LatLngBounds();
             places.forEach(function(place) {
-                var icon = {
-                    url: place.icon,
-                    size: new google.maps.Size(71, 71),
-                    origin: new google.maps.Point(0, 0),
-                    anchor: new google.maps.Point(17, 34),
-                    scaledSize: new google.maps.Size(25, 25)
-                };
 
                 // Create a marker for each place.
                 markers.push(new google.maps.Marker({
                     map: map,
-                    icon: icon,
                     title: place.name,
                     position: place.geometry.location
                 }));
@@ -73,80 +46,74 @@
                 }
             });
             map.fitBounds(bounds);
-            map.setZoom(14);
-            
-            if (places.length == 1)
-            {
-                $("#optional_dropdown").empty();
-                $("#optional_dropdown").parent().addClass('hidden');
-                $("#optional_dropdown").removeAttr('required');
-            }
-            
-            
-            if (places.length > 1)
-            {
-                $("#optional_dropdown").empty();
-                $("#optional_dropdown").parent().removeClass('hidden');
-                $("#optional_dropdown").attr('required', true);
-                $("#optional_dropdown").append('<option value="" selected disabled>Please select</option>');
-                places.forEach(function(place) {
-                    $("#optional_dropdown").append('<option>' + place.name + '</option>');
-                });
-            }
-        });
-        // [END region_getplaces]
         }
-    </script>
-    <script type="text/javascript">
+        
+        function initAutocomplete() {
+            map = new google.maps.Map(document.getElementById('map'), {    //// GLOBAL
+                center: {lat: 54.468057, lng: -3.038273},
+                zoom: 5,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                disableDefaultUI: true
+            });
+
+            // Create the search box and link it to the UI element.
+            var input = document.getElementById('map_input');
+            searchBox = new google.maps.places.SearchBox(input);  //// GLOBAL
+
+            // Bias the SearchBox results towards current map's viewport.
+            map.addListener('bounds_changed', function() {
+                searchBox.setBounds(map.getBounds());
+            });
+
+            markers = [];    //// GLOBAL
+
+            // Listen for the event fired when the user selects a prediction and retrieve
+            // more details for that place.
+            searchBox.addListener('places_changed', function() {
+
+                places = returnPlaces()
+                addMarkersToMap(places)            
+                if (places.length == 1)
+                {
+                    $("#optional_dropdown").empty();
+                    $("#optional_dropdown").parent().addClass('hidden');
+                    $("#optional_dropdown").removeAttr('required');
+                    map.setZoom(14);
+                }
+                
+                
+                if (places.length > 1)
+                {
+                    $("#optional_dropdown").empty();
+                    $("#optional_dropdown").parent().removeClass('hidden');
+                    $("#optional_dropdown").attr('required', true);
+                    $("#optional_dropdown").append('<option value="" selected disabled>Please select</option>');
+                    places.forEach(function(place) {
+                        $("#optional_dropdown").append('<option>' + place.name + '</option>');
+                    });
+                }
+            });
+        }
     
         $(document).ready(function(){
-
             $('#optional_dropdown').change(function() {
                 var places = searchBox.getPlaces();
-
-                if (places.length == 0) {
-                    return;
-                }
-
-                // Clear out the old markers.
-                markers.forEach(function(marker) {
-                    marker.setMap(null);
-                });
-                markers = [];
-
-                // For each place, get the icon, name and location.
-                var bounds = new google.maps.LatLngBounds();
-                places.forEach(function(place) {
-                    if (place.name == $('#optional_dropdown').val())
-                    {
-                        var icon = {
-                            url: place.icon,
-                            size: new google.maps.Size(71, 71),
-                            origin: new google.maps.Point(0, 0),
-                            anchor: new google.maps.Point(17, 34),
-                            scaledSize: new google.maps.Size(25, 25)
-                        };
-
-                        // Create a marker for each place.
-                        markers.push(new google.maps.Marker({
-                            map: map,
-                            icon: icon,
-                            title: place.name,
-                            position: place.geometry.location
-                        }));
-
-                        if (place.geometry.viewport) {
-                            // Only geocodes have viewport.
-                            bounds.union(place.geometry.viewport);
-                        } else {
-                            bounds.extend(place.geometry.location);
+                var selectedPlace;
+                if (places.length == 1)
+                {
+                    selectedPlace = places[0];
+                } else if (places.length > 1)
+                {
+                    places.forEach(function(place) {
+                        if (place.name == $('#optional_dropdown').val())
+                        {
+                            selectedPlace = place;
                         }
-                    }
-                });
-                map.fitBounds(bounds);
+                    });
+                }
+                addMarkersToMap([selectedPlace]);
                 map.setZoom(14);
             });
-            
         })
     </script>
     <script>

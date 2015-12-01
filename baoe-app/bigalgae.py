@@ -35,3 +35,10 @@ def send_email(message, recipient_address):
 def get_email_password():
     with open('/var/www/html/baoe-app/.google_password') as f:
         return(f.readline().strip())
+
+def process_advanced_measurements_string(input_string):
+    return_list = []
+    for value in input_string.split(','):
+        if not value == '':
+            return_list.append(float(value))
+    return(return_list)

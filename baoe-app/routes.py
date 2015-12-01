@@ -12,10 +12,6 @@ client = MongoClient()
 
 DB_NAME = 'bigalgae'
 
-#COLLECTION_NAME = 'bioreactors'
-
-#COUNTER = 'counter'
-
 BIOREACTOR_COLLECTION = 'bioreactors'
 
 GLOBAL_VARIABLE_COLLECTION = 'counter'
@@ -192,9 +188,9 @@ def experiment(reactor_id, experiment_id):
         if request.method == 'POST':
             file_upload = request.files['upload_picture']
             upload_code_provided = request.form['upload_validation']
-            cell_count = request.form['cell_count']
-            od680 = request.form['od680']
-            od750 = request.form['od750']
+            cell_count_list = bigalgae.process_advanced_measurements_string(request.form['cell_count'])
+            od680_list = bigalgae.process_advanced_measurements_string(request.form['od680'])
+            od750_list = bigalgae.process_advanced_measurements_string(request.form['od750'])
             if exp_search[0]['upload_code'] == upload_code_provided:
                 if file_upload and allowed_file(file_upload.filename):
                     filename = secure_filename(file_upload.filename)
@@ -218,9 +214,9 @@ def experiment(reactor_id, experiment_id):
                                             'experiments': {'$elemMatch': {'id': experiment_id}}}, \
                                             {'$push': {'experiments.$.measurements': \
                                                 {'file_name': saved_filename , \
-                                                'cell_count': cell_count, \
-                                                'od680': od680, \
-                                                'od750': od750}
+                                                'cell_count': cell_count_list, \
+                                                'od680': od680_list, \
+                                                'od750': od750_list}
                                             }}, new=True)
                                             
                     f.close()
