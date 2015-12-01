@@ -1,4 +1,4 @@
-from flask import Flask, url_for, request, render_template, redirect
+from flask import Flask, url_for, request, render_template, redirect, jsonify
 from app import app
 from werkzeug import secure_filename
 import os, errno
@@ -44,6 +44,25 @@ def about():
 @app.route('/thanks')
 def thanks():
     return(render_template('ThanksReactor.html'))
+
+@app.route('/map')
+def map():
+    return(render_template('MapPage.html'))
+
+@app.route('/getallbioreactors')
+def getallbioreactors():
+    db = client[DB_NAME]
+    reactors = db[BIOREACTOR_COLLECTION]
+    id_search = [res for res in reactors.find({}, { 'name': 1, \
+                                                    'location': 1, \
+                                                    'latitude': 1, \
+                                                    'longitude': 1,\
+                                                    'experiments': 1})]
+    for res in id_search:
+        res['experiment_number'] = len(res['experiments'])
+        del(res['experiments'])
+        res['reactor_url'] = url_for('reactor', reactor_id=res['_id'])
+    return(jsonify(reactors=id_search))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

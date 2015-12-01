@@ -1,0 +1,84 @@
+{% extends "Base.html" %}
+{% block title %}Register - Big Algae Open Experiment{% endblock %}
+{% block head %}
+    {{ super() }}
+    <script>
+        // This example adds a search box to a map, using the Google Place Autocomplete
+        // feature. People can enter geographical searches. The search box will return a
+        // pick list containing a mix of places and predicted search terms.
+
+        function addMarkersToMap(reactor_array) {
+            var bounds = new google.maps.LatLngBounds();
+            reactor_array.forEach(function(reactor) {
+                var contentString = '<div id="content">'+
+                    '<div id="siteNotice"></div>'+
+                    '<a href="' + reactor.reactor_url + '"> <h1>Bioreactor ' + reactor._id + ' </h1></a>'+
+                    '<h2>Team Name: ' + reactor.name + '</h2>' +
+                    '<h2>Location: ' + reactor.location + '</h2>' +
+                    '<h2>Number of experiments: ' + reactor.experiment_number + '</h2>' +
+                    '</div>'
+            
+
+                var reactor_position = {lat: reactor.latitude, lng: reactor.longitude};
+                console.log(reactor_position);                
+                var infowindow = new google.maps.InfoWindow({
+                    content: contentString,
+                    maxWidth: 200
+                });
+
+                console.log('willy');
+                
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: reactor_position,
+                    title: 'Bioreactor ' + reactor._id
+                });
+                
+                console.log('willy2');
+                
+                marker.addListener('click', function() {
+                    infowindow.open(map, marker);
+                });
+                
+                bounds.extend(new google.maps.LatLng({latitude: reactor.latitude, longitude: reactor.longitude}));
+            });
+            map.fitBounds(bounds);
+        }
+        
+        function initReactorMap() {
+            map = new google.maps.Map(document.getElementById('map'), {    //// GLOBAL
+                center: {lat: 54.468057, lng: -3.038273},
+                zoom: 5,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                disableDefaultUI: true
+            });
+
+            $.ajax({url: "{{ url_for('getallbioreactors') }}"}).done(
+                function (data) {
+                    var reactors = data.reactors;
+                    console.log(reactors);
+                    addMarkersToMap(reactors);
+                });
+        };
+    </script>
+    <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA2PJtUfLZryy0ITEfJBzeRFAJWwDSPntk&callback=initReactorMap">
+    </script>
+{% endblock %}
+{% block body %}
+    {{ super() }}
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-md-9">
+                <h2>Register</h2>
+            </div> 
+        </div>
+        <div class="row">
+            <div class="col-md-9">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
