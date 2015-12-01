@@ -34,7 +34,8 @@
                     title: 'Bioreactor ' + reactor._id
                 });
                 
-                marker.addListener('click', function() {
+                // Mousedown instead of click to make it mobile friendly http://goo.gl/yIQ3sY
+                marker.addListener('mousedown', function() {
                     for (i = 0; i < infowindows.length; i++) { 
                         infowindows[i].close();
                     }                    
