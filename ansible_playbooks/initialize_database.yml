@@ -1,7 +1,7 @@
 ---
 
 - name: initialize the database of the big algae open experiment website
-  hosts: vagrant_centos7
+  hosts: all
   
   tasks: 
     - name: run the database initialisation script

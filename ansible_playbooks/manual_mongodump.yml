@@ -1,7 +1,7 @@
 ---
 
 - name: manually run a database backup
-  hosts: vagrant_centos7
+  hosts: all
   
   tasks: 
     - name: run mongodump script

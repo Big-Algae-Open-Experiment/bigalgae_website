@@ -1,7 +1,7 @@
 ---
 
 - name: backup the database and images of the big algae open experiment website
-  hosts: vagrant_centos7
+  hosts: all
   
   tasks: 
     - name: copy across backups folder

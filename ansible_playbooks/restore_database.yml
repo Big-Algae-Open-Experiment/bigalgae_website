@@ -1,7 +1,7 @@
 ---
 
 - name: provision flask web server
-  hosts: vagrant_centos7
+  hosts: all
   
   tasks: 
     - name: copy across backups folder

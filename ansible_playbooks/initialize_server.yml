@@ -1,7 +1,7 @@
 ---
 
 - name: provision flask web server
-  hosts: vagrant_centos7
+  hosts: all
   
   tasks: 
     #- name: update the system
@@ -78,11 +78,13 @@
     - name: this error http://ca3.php.net/manual/en/mongo.installation.php#mongo.installation.fedora
       command: /usr/sbin/setsebool -P httpd_can_network_connect 1
       notify: restart apache
-      
+      when: "'vagrant' in group_names"
+
     - name: this error https://github.com/wkhtmltopdf/wkhtmltopdf/issues/2267
       command: /usr/sbin/setsebool -P httpd_execmem on
       notify: restart apache
-      
+      when: "'vagrant' in group_names"
+
     - name: copy across apache configuration file
       copy: src=../server_configuration_files/baoe-app.conf
             dest=/etc/httpd/conf.d/baoe-app.conf
@@ -94,13 +96,13 @@
               
     - name: create image folder
       command: mkdir -p /var/www/html/baoe-app/images
-    
-    - name: change context of image folder
-      command: chcon -R -t httpd_sys_rw_content_t /var/www/html/baoe-app/images
-              
+
     - name: change owner of image folder
       command: chown -R apache:apache /var/www/html/baoe-app/images
-      
+    
+    - name: change context of image folder
+      command: chcon -R system_u:object_r:httpd_sys_rw_content_t /var/www/html/baoe-app/images
+              
     - name: copy across mongodb backup script
       copy: src=../server_configuration_files/mongodump_backup.sh
             dest=/var/www/html/baoe-app/
