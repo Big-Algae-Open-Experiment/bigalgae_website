@@ -7,6 +7,7 @@ from pymongo import MongoClient, errors
 import bigalgae
 # Required to create emails
 from email.mime.text import MIMEText
+import smtplib
 
 client = MongoClient()
 
@@ -99,20 +100,23 @@ def register():
                                 'validated': False, \
                                 'experiments': []})
                 success = True
-                
-                validation_link = url_for('validate', reactor_id=id_str, _external=True) + '?key=' + validation_key
-                confirmation_email = MIMEText(render_template('ConfirmationEmail', \
-                                                              validation_link = validation_link, \
-                                                              reactor_id = id_str))
-                confirmation_email['Subject'] = 'Big Algae Open Experiment Validation'
-
-                recipient = user_data['email']
-                
-                bigalgae.send_email(confirmation_email, recipient)
-
             except errors.DuplicateKeyError:
                 success = False
-                
+
+        validation_link = url_for('validate', reactor_id=id_str, _external=True) + '?key=' + validation_key
+        confirmation_email = MIMEText(render_template('ConfirmationEmail', \
+                                                        validation_link = validation_link, \
+                                                        reactor_id = id_str))
+        confirmation_email['Subject'] = 'Big Algae Open Experiment Validation'
+
+        recipient = user_data['email']
+
+        try:
+            bigalgae.send_email(confirmation_email, recipient)
+            error_with_email = False
+        except smtplib.SMTPAuthenticationError:
+            error_with_email = True
+        
         return(url_for('thanks'))
 
 @app.route('/reactor/<reactor_id>', methods=['GET', 'POST'])
@@ -173,9 +177,13 @@ def validate(reactor_id):
 
             recipient = id_search[0]['email']
             
-            bigalgae.send_email(info_email, recipient)
-                                 
-            return(render_template('SuccessfulValidation.html', reactor_id = reactor_id))
+            try:
+                bigalgae.send_email(info_email, recipient)
+                error_with_email = False
+            except smtplib.SMTPAuthenticationError:
+                error_with_email = True
+               
+            return(render_template('SuccessfulValidation.html', reactor_id = reactor_id, error_with_email = error_with_email))
 
 @app.route('/reactor/<reactor_id>/experiment/<experiment_id>', methods=['GET', 'POST'])
 def experiment(reactor_id, experiment_id):

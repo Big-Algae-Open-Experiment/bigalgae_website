@@ -102,7 +102,12 @@
     
     - name: change context of image folder
       command: chcon -R system_u:object_r:httpd_sys_rw_content_t /var/www/html/baoe-app/images
-              
+      when: "'production' in group_names"
+          
+    - name: change context of image folder
+      command: chcon -R -t httpd_sys_rw_content_t /var/www/html/baoe-app/images
+      when: "'vagrant' in group_names"
+
     - name: copy across mongodb backup script
       copy: src=../server_configuration_files/mongodump_backup.sh
             dest=/var/www/html/baoe-app/
