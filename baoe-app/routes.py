@@ -57,10 +57,13 @@ def getallbioreactors():
                                                     'location': 1, \
                                                     'latitude': 1, \
                                                     'longitude': 1,\
-                                                    'experiments': 1})]
+                                                    'experiments': 1, \
+                                                    'validated': 1})]
+    id_search = [res for res in id_search if res['validated']]
     for res in id_search:
         res['experiment_number'] = len(res['experiments'])
         del(res['experiments'])
+        del(res['validated'])
         res['reactor_url'] = url_for('reactor', reactor_id=res['_id'])
     return(jsonify(reactors=id_search))
 
@@ -222,7 +225,8 @@ def experiment(reactor_id, experiment_id):
                                                 {'file_name': saved_filename , \
                                                 'cell_count': cell_count_list, \
                                                 'od680': od680_list, \
-                                                'od750': od750_list}
+                                                'od750': od750_list, \
+                                                'dry_mass': []}
                                             }}, new=True)
                                             
                     f.close()
