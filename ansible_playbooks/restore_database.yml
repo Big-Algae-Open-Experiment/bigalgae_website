@@ -9,6 +9,13 @@
                    dest=/var/www/html/baoe-app
                    archive=yes
                    rsync_path="sudo rsync"
-    
+      when: "'vagrant' in group_names"
+      
+    - name: copy across backups folder
+      synchronize: src=../backups
+                   dest=/var/www/html/baoe-app
+                   archive=yes
+      when: "'production' in group_names"
+      
     - name: restore the database
       script: ../server_configuration_files/mongorestore.sh
