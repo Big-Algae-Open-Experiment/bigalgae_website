@@ -54,13 +54,12 @@
                     <li><a href="{{ url_for('experiment', reactor_id=reactor['_id'], experiment_id=experiment['id']) }}">Experiment {{ experiment['id'] }}</a></li>
                 {% endfor %}
                 </ul>
-                <a href="{{ url_for('register_experiment', reactor_id=reactor['_id']) }}" class="btn btn-primary" role="button">Register New Experiment</a>
                 <div class="panel-group" id="accordion">
                     <div class="panel panel-default">
                         <div data-toggle="collapse" data-parent="#accordion" data-target="#register_experiment" class="panel-heading">
                             <h4 class="panel-title">Register New Experiment (Click here to expand)</h4>
                         </div>
-                        <div id="register_experiment" class="panel-collapse collapse">
+                        <div id="register_experiment" class="panel-collapse collapse {% if incorrect_password %}in{% endif %}">
                             <div class="panel-body">
                                 {% if incorrect_password %}
                                     <p>Sorry, your experiment validation code was incorrect, please try again.</p>
@@ -83,7 +82,8 @@
                                 </form>                         
                             </div>
                         </div>
-                        
+                    </div>
+                    <div class="panel panel-default">
                         <div data-toggle="collapse" data-parent="#accordion" data-target="#qr_code" class="panel-heading">
                             <h4 class="panel-title">Display QR Code (Click here to expand)</h4>
                         </div>

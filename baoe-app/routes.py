@@ -93,7 +93,7 @@ def register():
                 
         return(url_for('thanks'))
 
-@app.route('/reactor/<reactor_id>')
+@app.route('/reactor/<reactor_id>', methods=['GET', 'POST'])
 def reactor(reactor_id):
     db = client[DB_NAME]
     reactors = db[BIOREACTOR_COLLECTION]
@@ -101,25 +101,12 @@ def reactor(reactor_id):
     if len(id_search) == 0:
         return(render_template('SorryReactor.html', search_id=reactor_id))
     else:
-        if id_search[0]['validated']:
-            return(render_template('ReactorPage.html', reactor=id_search[0]))
-        else:
-            return(render_template('UnvalidatedReactor.html', reactor=reactor_id))
-
-@app.route('/reactor/<reactor_id>/register', methods=['GET', 'POST'])
-def register_experiment(reactor_id):
-    db = client[DB_NAME]
-    reactors = db[BIOREACTOR_COLLECTION]
-    id_search = [res for res in reactors.find({'_id': reactor_id})]
-    if request.method == 'GET':
-        if len(id_search) == 0:
-            return(render_template('SorryReactor.html', search_id=reactor_id))
-        else:
-            return(render_template('RegisterExperiment.html', algal_species=algal_species, incorrect_password=False))
-    elif request.method == 'POST':
-        if len(id_search) == 0:
-            return(render_template('SorryReactor.html', search_id=reactor_id))
-        else:
+        if request.method == 'GET':
+            if id_search[0]['validated']:
+                return(render_template('ReactorPage.html', reactor=id_search[0], algal_species=algal_species, incorrect_password=False))
+            else:
+                return(render_template('UnvalidatedReactor.html', reactor=reactor_id))
+        elif request.method == 'POST':
             species = request.form['algae_dropdown']
             user_code = request.form['experiment_validation']
             experiment_validation_code = id_search[0]['experiment_validation_code']
@@ -135,7 +122,7 @@ def register_experiment(reactor_id):
 
                 return(redirect(url_for('experiment', reactor_id=reactor_id, experiment_id=experiment_id)))
             else:
-                return(render_template('RegisterExperiment.html', algal_species=algal_species, incorrect_password=True))
+                return(render_template('ReactorPage.html', reactor=id_search[0], algal_species=algal_species, incorrect_password=True))
 
 @app.route('/reactor/<reactor_id>/validate')
 def validate(reactor_id):
