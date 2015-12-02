@@ -1,0 +1,9 @@
+---
+
+- name: provision flask web server
+  hosts: all
+  
+  tasks: 
+    - name: copy across website files
+      copy: src=../baoe-app/
+            dest=/var/www/html/baoe-app/app
