@@ -3,6 +3,7 @@ import string
 # Required to send confirmation emails
 import smtplib
 from email.mime.text import MIMEText
+import piexif
 
 def generate_digit_code(N):
     ''' Returns a random string of digits of length N '''
@@ -42,3 +43,15 @@ def process_advanced_measurements_string(input_string):
         if not value == '':
             return_list.append(float(value))
     return(return_list)
+
+def extract_exif_data(image_filepath):
+    try:
+        exif_dict = piexif.load(image_filepath)
+    except ValueError:
+        return({})
+    output_dict = {}
+    for ifd in exif_dict.keys():
+        if ifd in ("0th", "Exif", "GPS", "1st"):
+            for tag in exif_dict[ifd]:
+                output_dict[piexif.TAGS[ifd][tag]["name"]] = exif_dict[ifd][tag]
+    return(output_dict)

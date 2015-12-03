@@ -57,6 +57,7 @@
         - flask
         - markdown
         - pdfkit
+        - piexif
             
     - name: copy across website files
       copy: src=../baoe-app/

@@ -276,6 +276,9 @@ def experiment(reactor_id, experiment_id):
                                     raise
                         f = os.fdopen(fd, 'w')
                         file_upload.save(f)
+                        f.close()
+                        
+                        exif_data = bigalgae.extract_exif_data(os.path.join(app.config['UPLOAD_FOLDER'], saved_filename))
                         
                         reactor = reactors.find_and_modify({'_id': reactor_id, \
                                                 'experiments': {'$elemMatch': {'id': experiment_id}}}, \
@@ -285,9 +288,9 @@ def experiment(reactor_id, experiment_id):
                                                     'od680': od680_list, \
                                                     'od750': od750_list, \
                                                     'dry_mass': [], \
-                                                    'upload_datetime': utc}
+                                                    'upload_datetime': utc, \
+                                                    'exif': exif_data}
                                                 }}, new=True)
-                        f.close()
                         experiment_dict = reactor['experiments'][int(experiment_id)-1]
                         return(render_template('ExperimentPage.html', \
                                             reactor_id=reactor_id, \

@@ -35,6 +35,9 @@
                             <li>OD680: {{ measurement['od680'] }}</li>
                             <li>OD750: {{ measurement['od750'] }}</li>
                             <li>Dry Mass: {{ measurement['dry_mass'] }}</li>
+                            {% if 'DateTimeOriginal' in measurement['exif'].keys() %}
+                                <li>Taken: {{ measurement['exif']['DateTimeOriginal'] }}</li>
+                            {% endif %}
                         </ul>
                         </li>
                     {% endfor %}
