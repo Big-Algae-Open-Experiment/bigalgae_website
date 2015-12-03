@@ -8,6 +8,7 @@ import bigalgae
 # Required to create emails
 from email.mime.text import MIMEText
 import smtplib
+import datetime
 
 client = MongoClient()
 
@@ -82,6 +83,7 @@ def register():
         upload_code = bigalgae.generate_digit_code(4)
         experiment_validation_code = bigalgae.generate_digit_code(6)
         validation_key = bigalgae.generate_validation_key(32)
+        utc = datetime.datetime.utcnow().isoformat()
         success = False
 
         while not success:
@@ -98,7 +100,8 @@ def register():
                                 'experiment_validation_code': experiment_validation_code, \
                                 'validation_key': validation_key, \
                                 'validated': False, \
-                                'experiments': []})
+                                'experiments': [], \
+                                'created_datetime': utc})
                 success = True
             except errors.DuplicateKeyError:
                 success = False
@@ -136,6 +139,7 @@ def reactor(reactor_id):
             species = request.form['algae_dropdown']
             user_code = request.form['experiment_validation']
             experiment_validation_code = id_search[0]['experiment_validation_code']
+            utc = datetime.datetime.utcnow().isoformat()
             if experiment_validation_code == user_code:
                 experiment_id = str(len(id_search[0]['experiments']) + 1)
                 
@@ -143,7 +147,8 @@ def reactor(reactor_id):
                                         {'$push': {'experiments': \
                                             {'id': experiment_id, \
                                             'species': species, \
-                                            'measurements': []}
+                                            'measurements': [], \
+                                            'created_datetime': utc}
                                         }})
 
                 return(redirect(url_for('experiment', reactor_id=reactor_id, experiment_id=experiment_id)))
@@ -257,6 +262,7 @@ def experiment(reactor_id, experiment_id):
                     od750_list = bigalgae.process_advanced_measurements_string(request.form['od750'])
                     if file_upload and allowed_file(file_upload.filename):
                         filename = secure_filename(file_upload.filename)
+                        utc = datetime.datetime.utcnow().isoformat()
                         present = True
                         while present:
                             try:
@@ -278,7 +284,8 @@ def experiment(reactor_id, experiment_id):
                                                     'cell_count': cell_count_list, \
                                                     'od680': od680_list, \
                                                     'od750': od750_list, \
-                                                    'dry_mass': []}
+                                                    'dry_mass': [], \
+                                                    'upload_datetime': utc}
                                                 }}, new=True)
                         f.close()
                         experiment_dict = reactor['experiments'][int(experiment_id)-1]
