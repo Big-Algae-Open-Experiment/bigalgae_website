@@ -50,10 +50,14 @@
                         <div id="add_dry_mass" class="panel-collapse collapse {% if incorrect_password_dry_mass or dry_mass_thanks%}in{% endif %}">
                             <div class="panel-body">
                                 {% if incorrect_password_dry_mass %}
-                                    <p>Sorry, your experiment validation code was incorrect, please try again.</p>
+                                    <div class="alert alert-danger" role="alert">
+                                        <p>Sorry, your experiment validation code was incorrect, please try again.</p>
+                                    </div>
                                 {% endif %}
                                 {% if dry_mass_thanks %}
-                                    <p>Thank you for updating a measurement with dry mass information!</p>
+                                    <div class="alert alert-success" role="alert">
+                                        <p>Thank you for updating a measurement with dry mass information!</p>
+                                    </div>
                                 {% endif %}
                                 <p>Please separate repeat measurements with a comma e.g. 123.45,678.90,123.45</p>
                                 <form id="form" method="post">
@@ -94,10 +98,14 @@
             <div class="col-md-6">
                 <h2>Upload</h2>
                 {% if incorrect_upload_code %}
-                    <p>Sorry, your upload code was incorrect, please try again.</p>
+                    <div class="alert alert-danger" role="alert">
+                        <p>Sorry, your upload code was incorrect, please try again.</p>
+                    </div>
                 {% endif %}
                 {% if twitter_thanks %}
-                    <p>Thanks so much for submitting a measurement! Share this on <a href="https://twitter.com/">Twitter</a></p>
+                    <div class="alert alert-success" role="alert">
+                        <p>Thanks so much for submitting a measurement! Share this on <a href="https://twitter.com/" class="alert-link">Twitter</a></p>
+                    </div>
                 {% endif %}
                 <form enctype="multipart/form-data" action="" method="post">
                     <div class="form-group">

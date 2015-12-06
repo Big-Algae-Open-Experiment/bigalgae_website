@@ -62,7 +62,9 @@
                         <div id="register_experiment" class="panel-collapse collapse {% if incorrect_password %}in{% endif %}">
                             <div class="panel-body">
                                 {% if incorrect_password %}
-                                    <p>Sorry, your experiment validation code was incorrect, please try again.</p>
+                                    <div class="alert alert-danger" role="alert">
+                                        <p>Sorry, your experiment validation code was incorrect, please try again.</p>
+                                    </div>
                                 {% endif %}
                                 <form id="form" method="post">
                                     <div class="form-group">
