@@ -70,7 +70,8 @@
             // Listen for the event fired when the user selects a prediction and retrieve
             // more details for that place.
             searchBox.addListener('places_changed', function() {
-
+//                 validateSearchBox();
+                
                 places = returnPlaces()
                 addMarkersToMap(places)            
                 if (places.length == 1)
@@ -95,7 +96,73 @@
             });
         }
     
-        $(document).ready(function(){
+        var validateTeamName = function() {
+            var team_name = $('#name').val();
+            error_bool = team_name == null || team_name == '';
+            if (error_bool)
+            {
+                if ($('#name-div').hasClass('alert-success')) {
+                    $('#name-div').removeClass('alert-success');
+                }
+                $('#name-div').addClass('alert alert-danger');
+                $('#name-error').removeClass('hidden');
+            } else {
+                if ($('#name-div').hasClass('alert-danger')) {
+                    $('#name-div').removeClass('alert-danger');
+                    $('#name-div').addClass('alert alert-success');
+                    $('#name-error').addClass('hidden');
+                }
+            }
+            return(!error_bool)
+        }
+        
+        var validateEmail = function() {
+            var team_name = $('#email').val();
+            var re = new RegExp(".+@.+");
+            error_bool = team_name == null || team_name == '' || !re.test(team_name);
+            if (error_bool)
+            {
+                if ($('#email-div').hasClass('alert-success')) {
+                    $('#email-div').removeClass('alert-success');
+                }
+                $('#email-div').addClass('alert alert-danger');
+                $('#email-error').removeClass('hidden');
+            } else {
+                if ($('#email-div').hasClass('alert-danger')) {
+                    $('#email-div').removeClass('alert-danger');
+                    $('#email-div').addClass('alert alert-success');
+                    $('#email-error').addClass('hidden');
+                }
+            }
+            return(!error_bool)
+        }
+
+        var validateSearchBox = function() {
+            var places = searchBox.getPlaces();
+            error_bool = places == undefined || places.length > 1;
+            if (error_bool)
+            {
+                if ($('#location-div').hasClass('alert-success')) {
+                    $('#location-div').removeClass('alert-success');
+                }
+                $('#location-div').addClass('alert alert-danger');
+                $('#location-error').removeClass('hidden');
+            } else {
+                if ($('#location-div').hasClass('alert-danger')) {
+                    $('#location-div').removeClass('alert-danger');
+                    $('#location-div').addClass('alert alert-success');
+                    $('#location-error').addClass('hidden');
+                }
+            }
+            return(!error_bool)
+        }
+        
+        $(document).ready(function() {
+            $('#name').blur(validateTeamName);
+            $('#map_input').blur(validateSearchBox);
+            $('#optional_dropdown').blur(validateSearchBox);
+            $('#email').blur(validateEmail);
+            
             $('#optional_dropdown').change(function() {
                 var places = searchBox.getPlaces();
                 var selectedPlace;
@@ -120,10 +187,10 @@
     
     function submitForm()
     {
-        var places = searchBox.getPlaces();
-        var selectedPlace;
-        if (places != undefined)
+        if (validateSearchBox() && validateTeamName() && validateEmail())
         {
+            var places = searchBox.getPlaces();
+            var selectedPlace;
             if (places.length == 1)
             {
                 selectedPlace = places[0];
@@ -157,9 +224,6 @@
                         window.location = data.responseText;
                     }
                 });
-        } else {
-            $('#location-div').addClass('alert alert-danger')
-            $('#location-error').removeClass('hidden')
         }
     }
     
@@ -183,9 +247,12 @@
             </div>
             <div class="col-md-6">            
                 <form id="form" target="_self" onsubmit="" action="javascript: submitForm()">
-                    <div class="form-group">
-                        <label class="control-label" for="name">Team Name</label>
-                        <input type="name" class="form-control" name="name" id="name" required />
+                    <div id="name-div">
+                        <div class="form-group">
+                            <label class="control-label" for="name">Team Name</label>
+                            <input type="name" class="form-control" name="name" id="name" required />
+                        </div>
+                        <p id="name-error" class="hidden">Please enter a team name.</p>
                     </div>
                     <div id="location-div">
                         <div class="form-group">
@@ -199,9 +266,12 @@
                         </div>
                         <p id="location-error" class="hidden">Please select a valid location from the list.</p>
                     </div>
-                    <div class="form-group">
-                        <label class="control-label" for="email">Email</label>
-                        <input type="email" class="form-control" name="email" id="email" required />
+                    <div id="email-div">
+                        <div class="form-group">
+                            <label class="control-label" for="email">Email</label>
+                            <input type="email" class="form-control" name="email" id="email" required />
+                        </div>
+                        <p id="email-error" class="hidden">Please enter a valid email.</p>
                     </div>
                     <center><button type="submit" class="btn btn-success">SUBMIT</button></center>
                 </form>                         
