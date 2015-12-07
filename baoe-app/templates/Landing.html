@@ -2,5 +2,25 @@
 {% block title %}Big Algae Open Experiment{% endblock %}
 {% block body %}
     {{ super() }}
-    <h2>Welcome</h2>
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Welcome to the Big Algae Open Experiment!</h1>
+            <p>The Big Algae Open Experiment is a fun way to learn about algae and contribute to scientific research!</p>
+            <p><a class="btn btn-success btn-lg" href="{{ url_for('about') }}" role="button">Learn more »</a></p>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Register</h2>
+                <p>Register a bioreactor and get involved in the Big Algae Open Experiment.</p>
+                <p><a class="btn btn-default" href="{{ url_for('register') }}" role="button">View details »</a></p>
+            </div>
+            <div class="col-md-6">
+                <h2>Explore</h2>
+                <p>Take a look at the teams which are already taking part in the Big Algae Open Experiment</p>
+                <p><a class="btn btn-default" href="{{ url_for('map') }}" role="button">View details »</a></p>
+            </div>
+        </div>
+    </div>    
 {% endblock %}
