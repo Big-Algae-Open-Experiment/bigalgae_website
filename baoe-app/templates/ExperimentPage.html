@@ -28,8 +28,13 @@
         
         var validateNumericField = function(field_id, required) {
             var field_value = $(field_id).val();
-            var re = new RegExp("^[0-9][0-9,.]+[0-9.]$");
-            var error_bool = field_value == null || (field_value == '' && required) || (field_value != '' && !re.test(field_value));
+            var reGT2 = new RegExp("^[0-9.][0-9,.]+[0-9.]$");
+            var reEQ2 = new RegExp("^[0-9.][0-9.]$");
+            var reEQ1 = new RegExp("[0-9]{1}");
+            var double = new RegExp('(\\,\\,)|(\\.\\.)');
+            
+            var valid = (reEQ1.test(field_value) || reEQ2.test(field_value) || reGT2.test(field_value)) && !double.test(field_value);
+            var error_bool = field_value == null || (field_value == '' && required) || (field_value != '' && !valid);
             var div = $(field_id + '-div');
             var error = $(field_id + '-error');
             if (error_bool)
@@ -52,7 +57,6 @@
         var validateUploadPhoto = function() {
             var field_id = '#upload_picture';
             var field_value = $(field_id).val();
-            var re = new RegExp("^[0-9][0-9,.]+[0-9.]$");
             var error_bool = field_value == null || field_value == '';
             var div = $(field_id + '-div');
             var error = $(field_id + '-error');
