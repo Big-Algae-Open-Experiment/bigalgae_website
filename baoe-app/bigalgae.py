@@ -3,7 +3,7 @@ import string
 # Required to send confirmation emails
 import smtplib
 from email.mime.text import MIMEText
-import piexif
+#import piexif
 import cv2
 import numpy as np
 
@@ -366,37 +366,20 @@ def get_time_and_sensor_information(binary_array):
     light = convert_binary(binary_array, 16, 24)
     return({'days': days, 'hours': hours, 'minutes': minutes, 'light': light})
 
-def analyse_image(image_filepath):
-    img = cv2.imread(image_filepath, cv2.CV_LOAD_IMAGE_COLOR)
-    width, height, channels = img.shape
-    thresh_img, contours, hierarchy = threshold_image(img, 21)
-    #algae_window_img = extract_algae_window(contours, hierarchy, img, 5.0)
-    #if algae_window_img[0] != 0:
-        #return(algae_window_img)
-    #else:
-        #algae_window_img = algae_window_img[1]
-    #cv2.imwrite('test.png', algae_window_img)
-              
+def extract_time_and_sensor_information(img, contours, hierarchy):
     time_window_img = extract_time_window(contours, hierarchy, img, 5.0)
     if time_window_img[0] != 0:
         return(time_window_img)
     else:
         time_window_img = time_window_img[1]
-    
     thresh_time_img, time_contours, time_hierarchy = threshold_image(time_window_img, 21)
-    
     time_img_grey = cv2.cvtColor(np.copy(time_window_img),cv2.COLOR_BGR2GRAY)
-    
     time_handles = get_time_handles(time_contours, time_hierarchy, 5.0)
-
     time_idx = get_central_time_window_idx(time_handles, time_contours)
-    
     roi = rect_crop(time_contours[time_idx], time_img_grey, ((60.8/2.3),7))    
-    
     roi_h, roi_w = roi.shape
     cell_w = int(roi_w / 16.0)
     cell_h = int(roi_h / 2.0)
-    
     cell_means = []
     for row_idx in range(2):
         for col_idx in range(16):
@@ -406,16 +389,24 @@ def analyse_image(image_filepath):
     cell_means = np.array(cell_means[0:24])
     normalized_cell_means = (255 * (cell_means-min(cell_means))) / \
         (max(cell_means)-min(cell_means))
-    
-    print(normalized_cell_means)
-    
     binary = np.array([int(150 < mean) for mean in normalized_cell_means])
-    
-    print(get_time_and_sensor_information(binary))
+    time_information = get_time_and_sensor_information(binary)
+    return((0, time_information, 'Finished'))
+
+def analyse_image(image_filepath):
+    img = cv2.imread(image_filepath, cv2.CV_LOAD_IMAGE_COLOR)
+    width, height, channels = img.shape
+    thresh_img, contours, hierarchy = threshold_image(img, 21)
+    algae_window_img = extract_algae_window(contours, hierarchy, img, 5.0)
+    if algae_window_img[0] != 0:
+        return(algae_window_img)
+    else:
+        print('Yep!')
+        algae_window_img = algae_window_img[1]
+              
             
-    cv2.imwrite('time.png', roi)
-              
+    time_and_sensor = extract_time_and_sensor_information(img, contours, hierarchy)
     
-              
+    print(time_and_sensor)
               
     return((0, None, 'Finished'))
