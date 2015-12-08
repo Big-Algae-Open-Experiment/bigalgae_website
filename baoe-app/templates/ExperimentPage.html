@@ -54,6 +54,29 @@
             return(!error_bool)
         }
 
+        var validateUploadCode = function(field_id) {
+            var field_value = $(field_id).val();
+            var re = new RegExp("^[0-9]{4}$");
+            var error_bool = field_value == null || field_value == '' || !re.test(field_value);
+            var div = $(field_id + '-div');
+            var error = $(field_id + '-error');
+            if (error_bool)
+            {
+                if (div.hasClass('alert-success')) {
+                    div.removeClass('alert-success');
+                }
+                div.addClass('alert alert-danger');
+                error.removeClass('hidden');
+            } else {
+                if (div.hasClass('alert-danger')) {
+                    div.removeClass('alert-danger');
+                    div.addClass('alert alert-success');
+                    error.addClass('hidden');
+                }
+            }
+            return(!error_bool)
+        }
+        
         var validateUploadPhoto = function() {
             var field_id = '#upload_picture';
             var field_value = $(field_id).val();
@@ -80,7 +103,9 @@
         
         
         var validateDryMassForm = function() {
-            return(validateNumericField('#dry_mass', true));
+            var dry_mass_bool = validateNumericField('#dry_mass', true);
+            var upload_code_bool = validateUploadCode('#upload_validation_dry_mass');
+            return(dry_mass_bool && upload_code_bool);
         }
         
         var validateImageSubmission = function() {
@@ -88,7 +113,8 @@
             var od680_bool = validateNumericField('#od680', false);
             var od750_bool = validateNumericField('#od750', false);
             var upload_bool = validateUploadPhoto();
-            return(cell_count_bool && od680_bool && od750_bool && upload_bool);
+            var upload_code_bool = validateUploadCode('#upload_validation_upload');
+            return(cell_count_bool && od680_bool && od750_bool && upload_bool && upload_code_bool);
         }
     </script>
     <script src="{{ url_for('static', filename='js/qrcode.min.js') }}" charset="utf-8"></script>
@@ -143,17 +169,17 @@
                                         </div>
                                         <p id="dry_mass-error" class="hidden">Please enter valid measurements using only digits, commas(,) and points(.).</p>
                                     </div>
-                                    {% if incorrect_password_dry_mass %}
-                                        <div class="alert alert-danger" role="alert">
-                                    {% endif %}
-                                    <div class="form-group">
-                                        <label for="upload_validation">4 digit Upload Code</label>
-                                        <input type="name" class="form-control" name="upload_validation" id="upload_validation" required>
-                                    </div>
-                                    {% if incorrect_password_dry_mass %}
-                                        <p>Sorry, your upload code code was incorrect, please try again.</p>
+                                    
+                                    <div id="upload_validation_dry_mass-div" {% if incorrect_password_dry_mass %} class="alert alert-danger" {% endif %}>
+                                        <div class="form-group">
+                                            <label for="upload_validation_dry_mass">4 digit Upload Code</label>
+                                            <input type="name" class="form-control" name="upload_validation_dry_mass" id="upload_validation_dry_mass" required>
                                         </div>
-                                    {% endif %}
+                                        {% if incorrect_password_dry_mass %}
+                                        <p>Sorry, your upload code code was incorrect, please try again.</p>
+                                        {% endif %}
+                                        <p id="upload_validation_dry_mass-error" class="hidden">Please enter a 4 digit upload code</p>
+                                    </div>
                                     <center><input type="submit" class="btn btn-success" name="submit_button" value="SUBMIT DRY MASS" disabled></center>
                                 </form>                         
                             </div>
@@ -200,17 +226,16 @@
                         </div>
                         <p id="upload_picture-error" class="hidden">Please take or choose a photo to upload.</p>
                     </div>
-                    {% if incorrect_upload_code %}
-                        <div class="alert alert-danger" role="alert">
-                    {% endif %}
-                    <div class="form-group">
-                        <label for="upload_validation">4 digit Upload Code</label>
-                        <input type="name" class="form-control" name="upload_validation" id="upload_validation" required>
-                    </div>
-                    {% if incorrect_upload_code %}
-                        <p>Sorry, your upload code code was incorrect, please try again.</p>
+                    <div id="upload_validation_upload-div" {% if incorrect_upload_code %} class="alert alert-danger" {% endif %}>
+                        <div class="form-group">
+                            <label for="upload_validation_upload">4 digit Upload Code</label>
+                            <input type="name" class="form-control" name="upload_validation_upload" id="upload_validation_upload" required>
                         </div>
-                    {% endif %}
+                        {% if incorrect_upload_code %}
+                        <p>Sorry, your upload code code was incorrect, please try again.</p>
+                        {% endif %}
+                        <p id="upload_validation_upload-error" class="hidden">Please enter a 4 digit upload code</p>
+                    </div>
                     <div class="panel-group">
                         <div class="panel panel-default">
                             <div data-toggle="collapse" data-target="#advanced_measurements" class="panel-heading" style="cursor: pointer;">

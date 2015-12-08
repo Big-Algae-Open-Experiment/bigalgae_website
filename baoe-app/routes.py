@@ -212,7 +212,7 @@ def experiment(reactor_id, experiment_id):
             if request.form['submit_button'] == 'SUBMIT DRY MASS':
                 file_name_to_update = request.form['file_name_input']
                 dry_mass_list = bigalgae.process_advanced_measurements_string(request.form['dry_mass'])
-                upload_code_provided = request.form['upload_validation']
+                upload_code_provided = request.form['upload_validation_dry_mass']
                 print(dry_mass_list)
                 if exp_search[0]['upload_code'] == upload_code_provided:
                     reactor = reactors.find_and_modify({'_id': reactor_id, \
@@ -254,7 +254,7 @@ def experiment(reactor_id, experiment_id):
                                         dry_mass_thanks=False))
 
             elif request.form['submit_button'] == 'SUBMIT IMAGE':
-                upload_code_provided = request.form['upload_validation']
+                upload_code_provided = request.form['upload_validation_upload']
                 if exp_search[0]['upload_code'] == upload_code_provided:
                     file_upload = request.files['upload_picture']
                     cell_count_list = bigalgae.process_advanced_measurements_string(request.form['cell_count'])

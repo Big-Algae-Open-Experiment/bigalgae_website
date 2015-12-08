@@ -25,6 +25,62 @@
             });
             
         }
+        
+        
+        var validateRegistrationForm = function() {
+            var species_bool = validateSpeciesSelect();
+            var code_bool = validateExperimentCode();
+            return(species_bool && code_bool);
+        }
+        
+        var validateSpeciesSelect = function() {
+            var field_id = '#algae_dropdown';
+            var field_value = $(field_id).val();
+            var error_bool = field_value == null || field_value == '';
+            var div = $(field_id + '-div');
+            var error = $(field_id + '-error');
+            if (error_bool)
+            {
+                if (div.hasClass('alert-success')) {
+                    div.removeClass('alert-success');
+                }
+                div.addClass('alert alert-danger');
+                error.removeClass('hidden');
+            } else {
+                if (div.hasClass('alert-danger')) {
+                    div.removeClass('alert-danger');
+                    div.addClass('alert alert-success');
+                    error.addClass('hidden');
+                }
+            }
+            return(!error_bool)
+        }
+        
+        var validateExperimentCode = function() {
+            var field_id = '#experiment_validation';
+            var field_value = $(field_id).val();
+            var re = new RegExp("^[0-9]{6}$");
+            var error_bool = field_value == null || field_value == '' || !re.test(field_value);
+            var div = $(field_id + '-div');
+            var error = $(field_id + '-error');
+            if (error_bool)
+            {
+                if (div.hasClass('alert-success')) {
+                    div.removeClass('alert-success');
+                }
+                div.addClass('alert alert-danger');
+                error.removeClass('hidden');
+            } else {
+                if (div.hasClass('alert-danger')) {
+                    div.removeClass('alert-danger');
+                    div.addClass('alert alert-success');
+                    error.addClass('hidden');
+                }
+            }
+            return(!error_bool)
+        }
+        
+        
     </script>
     <script async defer
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA2PJtUfLZryy0ITEfJBzeRFAJWwDSPntk&callback=initMap">
@@ -61,26 +117,30 @@
                         </div>
                         <div id="register_experiment" class="panel-collapse collapse {% if incorrect_password %}in{% endif %}">
                             <div class="panel-body">
-                                <form id="form" method="post">
+                                <form id="form" method="post" onsubmit="return validateRegistrationForm()">
                                     <div class="form-group">
-                                        <label for="algae_dropdown">Which algal species are you growing?</label>
-                                        <select class="form-control" name="algae_dropdown" id="algae_dropdown">
-                                            {% for species in algal_species %}
-                                                <option>{{ species }}</option>
-                                            {% endfor %}
-                                        </select>
+                                        <div id='algae_dropdown-div'>
+                                            <label for="algae_dropdown">Which algal species are you growing?</label>
+                                            <select class="form-control" name="algae_dropdown" id="algae_dropdown" required>
+                                                <option value="" selected disabled>Please select</option>
+                                                {% for species in algal_species %}
+                                                    <option>{{ species }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <p id="algae_dropdown-error" class="hidden">Please select the algal species you will be growing in this experiment.</p>
+                                        </div>
                                     </div>
-                                    {% if incorrect_password %}
-                                        <div class="alert alert-danger" role="alert">
-                                    {% endif %}
-                                    <div class="form-group">
-                                        <label for="experiment_validation">6 digit Experiment Validation Code</label>
-                                        <input type="password" class="form-control" name="experiment_validation" id="experiment_validation">
-                                    </div>
+                                    
+                                    <div id='experiment_validation-div' {% if incorrect_password %} class="alert alert-danger" {% endif %} >
+                                        <div class="form-group">
+                                            <label for="experiment_validation">6 digit Experiment Validation Code</label>
+                                            <input type="password" class="form-control" name="experiment_validation" id="experiment_validation">
+                                        </div>
                                     {% if incorrect_password %}
                                         <p>Sorry, your experiment validation code was incorrect, please try again.</p>
-                                        </div>
                                     {% endif %}
+                                        <p id="experiment_validation-error" class="hidden">Please enter your 6 digit verification code.</p>
+                                    </div>
                                     <center><button type="submit" class="btn btn-success">SUBMIT</button></center>
                                 </form>                         
                             </div>
