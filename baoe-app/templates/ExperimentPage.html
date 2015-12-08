@@ -133,13 +133,11 @@
                     {% for measurement in experiment_dict['measurements'] %}
                         <li class="measurement_entry" file_name="{{ measurement['file_name'] }}"><a>{{ measurement['file_name'] }}</a>
                         <ul>
+                            <li>Uploaded: {{ measurement['upload_datetime'] }}</li>
                             <li>Cell count: {{ measurement['cell_count'] }}</li>
                             <li>OD680: {{ measurement['od680'] }}</li>
                             <li>OD750: {{ measurement['od750'] }}</li>
                             <li>Dry Mass: {{ measurement['dry_mass'] }}</li>
-                            {% if 'DateTime' in measurement['exif'].keys() %}
-                                <li>Taken: {{ measurement['exif']['DateTime'] }}</li>
-                            {% endif %}
                         </ul>
                         </li>
                     {% endfor %}
@@ -207,7 +205,7 @@
                 {% if twitter_thanks %}
                     <div class="alert alert-success" role="alert">
                         <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-                        <p>Thanks so much for submitting a measurement! Share this on Twitter: <span class='social'><a href="https://twitter.com/share" class="twitter-share-button"{count} data-text="I just uploaded a measurement as part of the @bigalgae Open Experiment!" data-hashtags="bigalgae"></a></span></p>
+                        <p>Thanks so much for submitting a measurement! Share this on Twitter: <span class='social'><a href="https://twitter.com/share" class="twitter-share-button"{count} data-text="I just uploaded a measurement as part of the @big_algae Open Experiment!" data-hashtags="bigalgae"></a></span></p>
                     </div>
                 {% endif %}
                 <form id='pic_upload' enctype="multipart/form-data" onsubmit="return validateImageSubmission()" action="" method="post">

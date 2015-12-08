@@ -288,6 +288,14 @@ def experiment(reactor_id, experiment_id):
                                                     'od680': od680_list, \
                                                     'od750': od750_list, \
                                                     'dry_mass': [], \
+                                                    'cell_count_prediction_mean': None, \
+                                                    'cell_count_prediction_sd': None, \
+                                                    'od680_prediction_mean': None, \
+                                                    'od680_prediction_sd': None, \
+                                                    'od750_prediction_mean': None, \
+                                                    'od750_prediction_sd': None, \
+                                                    'dry_mass_prediction_mean': None, \
+                                                    'dry_mass_prediction_sd': None, \
                                                     'upload_datetime': utc, \
                                                     'exif': exif_data}
                                                 }}, new=True)
