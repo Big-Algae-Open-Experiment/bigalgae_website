@@ -1,6 +1,13 @@
 {% extends "Base.html" %}
 {% block title %}Big Algae Open Experiment{% endblock %}
-{% block body %}
+{% block head %}
+    {{ super() }}
+    <style type="text/css">
+        .navbar {
+            margin-bottom: 0px;
+        }
+    </style>
+{% endblock %}{% block body %}
     {{ super() }}
     <div class="jumbotron">
         <div class="container">
