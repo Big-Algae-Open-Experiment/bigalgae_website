@@ -98,7 +98,7 @@
     
         var validateTeamName = function() {
             var team_name = $('#name').val();
-            error_bool = team_name == null || team_name == '';
+            var error_bool = team_name == null || team_name == '';
             if (error_bool)
             {
                 if ($('#name-div').hasClass('alert-success')) {
@@ -119,7 +119,7 @@
         var validateEmail = function() {
             var team_name = $('#email').val();
             var re = new RegExp(".+@.+");
-            error_bool = team_name == null || team_name == '' || !re.test(team_name);
+            var error_bool = team_name == null || team_name == '' || !re.test(team_name);
             if (error_bool)
             {
                 if ($('#email-div').hasClass('alert-success')) {
@@ -139,7 +139,7 @@
 
         var validateSearchBox = function() {
             var places = searchBox.getPlaces();
-            error_bool = places == undefined || places.length > 1;
+            var error_bool = places == undefined || (places.length > 1 && $('#optional_dropdown').val() == null);
             if (error_bool)
             {
                 if ($('#location-div').hasClass('alert-success')) {
@@ -158,11 +158,6 @@
         }
         
         $(document).ready(function() {
-            $('#name').blur(validateTeamName);
-            $('#map_input').blur(validateSearchBox);
-            $('#optional_dropdown').blur(validateSearchBox);
-            $('#email').blur(validateEmail);
-            
             $('#optional_dropdown').change(function() {
                 var places = searchBox.getPlaces();
                 var selectedPlace;
@@ -187,7 +182,11 @@
     
     function submitForm()
     {
-        if (validateSearchBox() && validateTeamName() && validateEmail())
+        var nameBool = validateTeamName();
+        var searchBoxBool = validateSearchBox();
+        var emailBool = validateEmail();
+    
+        if (nameBool && searchBoxBool && emailBool)
         {
             var places = searchBox.getPlaces();
             var selectedPlace;
@@ -203,6 +202,8 @@
                     }
                 });
             }
+        
+            $('#submit_button').prop('disabled', true);
         
             var email = $('#email').val();
             var name = $('#name').val();
@@ -273,7 +274,7 @@
                         </div>
                         <p id="email-error" class="hidden">Please enter a valid email.</p>
                     </div>
-                    <center><button type="submit" class="btn btn-success">SUBMIT</button></center>
+                    <center><button type="submit" class="btn btn-success" id='submit_button' name='submit_button'>SUBMIT</button></center>
                 </form>                         
             </div> 
         </div>

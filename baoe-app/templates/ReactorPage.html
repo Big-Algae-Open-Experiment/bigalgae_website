@@ -61,11 +61,6 @@
                         </div>
                         <div id="register_experiment" class="panel-collapse collapse {% if incorrect_password %}in{% endif %}">
                             <div class="panel-body">
-                                {% if incorrect_password %}
-                                    <div class="alert alert-danger" role="alert">
-                                        <p>Sorry, your experiment validation code was incorrect, please try again.</p>
-                                    </div>
-                                {% endif %}
                                 <form id="form" method="post">
                                     <div class="form-group">
                                         <label for="algae_dropdown">Which algal species are you growing?</label>
@@ -75,11 +70,17 @@
                                             {% endfor %}
                                         </select>
                                     </div>
-                                    
+                                    {% if incorrect_password %}
+                                        <div class="alert alert-danger" role="alert">
+                                    {% endif %}
                                     <div class="form-group">
-                                        <label for="experiment_validation">Experiment Validation Code</label>
+                                        <label for="experiment_validation">6 digit Experiment Validation Code</label>
                                         <input type="password" class="form-control" name="experiment_validation" id="experiment_validation">
                                     </div>
+                                    {% if incorrect_password %}
+                                        <p>Sorry, your experiment validation code was incorrect, please try again.</p>
+                                        </div>
+                                    {% endif %}
                                     <center><button type="submit" class="btn btn-success">SUBMIT</button></center>
                                 </form>                         
                             </div>

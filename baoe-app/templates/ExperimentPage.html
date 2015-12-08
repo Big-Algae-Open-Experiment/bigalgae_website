@@ -11,14 +11,81 @@
         $(document).ready(function() {
             var file_name_input = $('#file_name_input');
             var submit_button = $('input[value="SUBMIT DRY MASS"]');
-            submit_button.prop('disabled', true);
             $('.measurement_entry').click(function(e) {
                 var file_name = $(this).attr('file_name');
                 file_name_input.attr('value', file_name);
                 submit_button.prop('disabled', false);
                 $('#add_dry_mass').addClass('in');
-            })
+            });
+            $('#upload_picture').change(function() {
+                var filePath = $('#upload_picture').val()
+                if(filePath.match(/fakepath/)) {
+                    filePath = filePath.replace(/C:\\fakepath\\/i, '');
+                }
+                $('#upload_textbox').attr('value', filePath);
+            });
         });
+        
+        var validateNumericField = function(field_id, required) {
+            var field_value = $(field_id).val();
+            var re = new RegExp("^[0-9][0-9,.]+[0-9.]$");
+            var error_bool = field_value == null || (field_value == '' && required) || (field_value != '' && !re.test(field_value));
+            var div = $(field_id + '-div');
+            var error = $(field_id + '-error');
+            if (error_bool)
+            {
+                if (div.hasClass('alert-success')) {
+                    div.removeClass('alert-success');
+                }
+                div.addClass('alert alert-danger');
+                error.removeClass('hidden');
+            } else {
+                if (div.hasClass('alert-danger')) {
+                    div.removeClass('alert-danger');
+                    div.addClass('alert alert-success');
+                    error.addClass('hidden');
+                }
+            }
+            return(!error_bool)
+        }
+
+        var validateUploadPhoto = function() {
+            var field_id = '#upload_picture';
+            var field_value = $(field_id).val();
+            var re = new RegExp("^[0-9][0-9,.]+[0-9.]$");
+            var error_bool = field_value == null || field_value == '';
+            var div = $(field_id + '-div');
+            var error = $(field_id + '-error');
+            if (error_bool)
+            {
+                if (div.hasClass('alert-success')) {
+                    div.removeClass('alert-success');
+                }
+                div.addClass('alert alert-danger');
+                error.removeClass('hidden');
+            } else {
+                if (div.hasClass('alert-danger')) {
+                    div.removeClass('alert-danger');
+                    div.addClass('alert alert-success');
+                    error.addClass('hidden');
+                }
+            }
+            return(!error_bool)
+        }
+        
+        
+        
+        var validateDryMassForm = function() {
+            return(validateNumericField('#dry_mass', true));
+        }
+        
+        var validateImageSubmission = function() {
+            var cell_count_bool = validateNumericField('#cell_count', false);
+            var od680_bool = validateNumericField('#od680', false);
+            var od750_bool = validateNumericField('#od750', false);
+            var upload_bool = validateUploadPhoto();
+            return(cell_count_bool && od680_bool && od750_bool && upload_bool);
+        }
     </script>
     <script src="{{ url_for('static', filename='js/qrcode.min.js') }}" charset="utf-8"></script>
 {% endblock %}
@@ -54,31 +121,36 @@
                         </div>
                         <div id="add_dry_mass" class="panel-collapse collapse {% if incorrect_password_dry_mass or dry_mass_thanks%}in{% endif %}">
                             <div class="panel-body">
-                                {% if incorrect_password_dry_mass %}
-                                    <div class="alert alert-danger" role="alert">
-                                        <p>Sorry, your experiment validation code was incorrect, please try again.</p>
-                                    </div>
-                                {% endif %}
                                 {% if dry_mass_thanks %}
                                     <div class="alert alert-success" role="alert">
                                         <p>Thank you for updating a measurement with dry mass information!</p>
                                     </div>
                                 {% endif %}
                                 <p>Please separate repeat measurements with a comma e.g. 123.45,678.90,123.45</p>
-                                <form id="form" method="post">
+                                <form id="dm_upload" method="post" onsubmit="return validateDryMassForm()">
                                     <div class="form-group">
                                         <label for="file_name_input">File Name</label>
                                         <input readonly="readonly" type="name" class="form-control" name="file_name_input" id="file_name_input">
                                     </div>
-                                    <div class="form-group">
-                                        <label for="dry_mass">Dry mass (g / l)</label>
-                                        <input type="name" class="form-control" name="dry_mass" id="dry_mass">
+                                    <div id="dry_mass-div">
+                                        <div class="form-group">
+                                            <label for="dry_mass">Dry mass (g / l)</label>
+                                            <input type="name" class="form-control" name="dry_mass" id="dry_mass">
+                                        </div>
+                                        <p id="dry_mass-error" class="hidden">Please enter valid measurements using only digits, commas(,) and points(.).</p>
                                     </div>
+                                    {% if incorrect_password_dry_mass %}
+                                        <div class="alert alert-danger" role="alert">
+                                    {% endif %}
                                     <div class="form-group">
                                         <label for="upload_validation">4 digit Upload Code</label>
                                         <input type="name" class="form-control" name="upload_validation" id="upload_validation" required>
                                     </div>
-                                    <center><input type="submit" class="btn btn-success" name="submit_button" value="SUBMIT DRY MASS"></center>
+                                    {% if incorrect_password_dry_mass %}
+                                        <p>Sorry, your upload code code was incorrect, please try again.</p>
+                                        </div>
+                                    {% endif %}
+                                    <center><input type="submit" class="btn btn-success" name="submit_button" value="SUBMIT DRY MASS" disabled></center>
                                 </form>                         
                             </div>
                         </div>
@@ -102,30 +174,39 @@
             </div> 
             <div class="col-md-6">
                 <h2>Upload</h2>
-                {% if incorrect_upload_code %}
-                    <div class="alert alert-danger" role="alert">
-                        <p>Sorry, your upload code was incorrect, please try again.</p>
-                    </div>
-                {% endif %}
                 {% if twitter_thanks %}
                     <div class="alert alert-success" role="alert">
                         <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
                         <p>Thanks so much for submitting a measurement! Share this on Twitter: <span class='social'><a href="https://twitter.com/share" class="twitter-share-button"{count} data-text="I just uploaded a measurement as part of the @bigalgae Open Experiment!" data-hashtags="bigalgae"></a></span></p>
                     </div>
                 {% endif %}
-                <form enctype="multipart/form-data" action="" method="post">
-                    <div class="form-group">
-                        <label class="btn btn-primary" for="upload_picture">
-                            <input type='file' style="display:none;" capture='camera' accept='image/*' name='upload_picture' id='upload_picture' required>
-                        Upload Image    
-                        </label>
-                    </div>
+                <form id='pic_upload' enctype="multipart/form-data" onsubmit="return validateImageSubmission()" action="" method="post">
+                    <div id="upload_picture-div">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-btn">
 
+                                    <label class="btn btn-primary" for="upload_picture">
+                                        <input type='file' style="display:none;" capture='camera' accept='image/*' name='upload_picture' id='upload_picture'>
+                                    Upload Image    
+                                    </label>
+                                </span>
+                                <input type="text" id='upload_textbox' name='upload_textbox' class="form-control" value="No image selected" readonly="readonly">
+                            </div>
+                        </div>
+                        <p id="upload_picture-error" class="hidden">Please take or choose a photo to upload.</p>
+                    </div>
+                    {% if incorrect_upload_code %}
+                        <div class="alert alert-danger" role="alert">
+                    {% endif %}
                     <div class="form-group">
                         <label for="upload_validation">4 digit Upload Code</label>
                         <input type="name" class="form-control" name="upload_validation" id="upload_validation" required>
                     </div>
-
+                    {% if incorrect_upload_code %}
+                        <p>Sorry, your upload code code was incorrect, please try again.</p>
+                        </div>
+                    {% endif %}
                     <div class="panel-group">
                         <div class="panel panel-default">
                             <div data-toggle="collapse" data-target="#advanced_measurements" class="panel-heading" style="cursor: pointer;">
@@ -134,24 +215,31 @@
                             <div id="advanced_measurements" class="panel-collapse collapse">
                                 <div class="panel-body">
                                     <p>Please separate repeat measurements with a comma e.g. 123.45,678.90,123.45</p>
-                                    <div class="form-group">
-                                        <label for="cell_count">Cell count (cells / ml)</label>
-                                        <input type="name" class="form-control" name="cell_count" id="cell_count">
+                                    <div id="cell_count-div">
+                                        <div class="form-group">
+                                            <label for="cell_count">Cell count (cells / ml)</label>
+                                            <input type="name" class="form-control" name="cell_count" id="cell_count">
+                                        </div>
+                                        <p id="cell_count-error" class="hidden">Please enter valid measurements using only digits, commas(,) and points(.).</p>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="cell_count">Optical density 680nm</label>
-                                        <input type="name" class="form-control" name="od680" id="od680">
+                                    <div id="od680-div">
+                                        <div class="form-group">
+                                            <label for="cell_count">Optical density 680nm</label>
+                                            <input type="name" class="form-control" name="od680" id="od680">
+                                        </div>
+                                        <p id="od680-error" class="hidden">Please enter valid measurements using only digits, commas(,) and points(.).</p>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="cell_count">Optical density 750nm</label>
-                                        <input type="name" class="form-control" name="od750" id="od750">
+                                    <div id="od750-div">
+                                        <div class="form-group">
+                                            <label for="cell_count">Optical density 750nm</label>
+                                            <input type="name" class="form-control" name="od750" id="od750">
+                                        </div>
+                                        <p id="od750-error" class="hidden">Please enter valid measurements using only digits, commas(,) and points(.).</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    
                     <center><input type="submit" class="btn btn-success" name="submit_button" value="SUBMIT IMAGE"></center>
                 </form>
             </div> 
