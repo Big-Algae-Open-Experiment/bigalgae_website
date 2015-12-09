@@ -7,3 +7,7 @@
     - name: copy across website files
       copy: src=../baoe-app/
             dest=/var/www/html/baoe-app/app
+            
+    - name: restart apache
+      service: name=httpd
+               state=restarted

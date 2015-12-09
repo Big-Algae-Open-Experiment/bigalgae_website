@@ -5,7 +5,7 @@ import logging, sys
 
 app = Flask(__name__)
 
-client = MongoClient()
+client = MongoClient(connect=False)
 
 from routes import *
 

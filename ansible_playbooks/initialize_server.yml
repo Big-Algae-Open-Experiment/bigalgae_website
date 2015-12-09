@@ -8,6 +8,10 @@
       #yum: name=*
            #state=latest
 
+    # I had to do this as SELinux was reacting poorly with numpy, as numpy uses
+    # shared C extensions https://code.google.com/p/modwsgi/wiki/ApplicationIssues#Secure_Variants_Of_UNIX
+    - selinux: policy=targeted state=permissive
+           
     - name: add the epel repository
       yum: name=epel-release
            state=present                   
@@ -29,7 +33,11 @@
         - wkhtmltopdf
         - xorg-x11-server-Xvfb
         - urw-fonts
-    
+        - opencv-python
+        - gcc # required for numpy
+        - libjpeg-devel # required for image
+        - zlib-devel # required for image
+
     - name: start firewalld
       service: name=firewalld
                enabled=yes
@@ -47,20 +55,23 @@
       notify: restart firewalld
 
     - name: create a python virtual environment
-      command: virtualenv /var/www/html/baoe-app/env
+      command: virtualenv --system-site-packages /var/www/html/baoe-app/env
             
     - name: install necessary python packages
       pip: name={{ item }}
            virtualenv=/var/www/html/baoe-app/env
+           extra_args='-U'
       with_items:
         - pymongo
         - flask
         - markdown
         - pdfkit
         - piexif
-        - cv2
-        - sklearn
-        - exifread
+        - numpy
+        - image
+            
+    #- name: install opencv to virtual environment
+      #script: ../server_configuration_files/setup_opencv.sh
             
     - name: copy across website files
       copy: src=../baoe-app/

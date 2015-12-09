@@ -10,7 +10,7 @@ from email.mime.text import MIMEText
 import smtplib
 import datetime
 
-client = MongoClient()
+client = MongoClient(connect=False)
 
 DB_NAME = 'bigalgae'
 
@@ -207,7 +207,8 @@ def experiment(reactor_id, experiment_id):
                                 experiment_dict=experiment_dict,
                                 incorrect_upload_code=False,
                                 twitter_thanks=False,
-                                incorrect_password_dry_mass=False))
+                                incorrect_password_dry_mass=False,
+                                analyse_image_output='No image information'))
         if request.method == 'POST':
             if request.form['submit_button'] == 'SUBMIT DRY MASS':
                 file_name_to_update = request.form['file_name_input']
@@ -243,7 +244,8 @@ def experiment(reactor_id, experiment_id):
                                         incorrect_upload_code=False,
                                         twitter_thanks=False,
                                         incorrect_password_dry_mass=False,
-                                        dry_mass_thanks=True))
+                                        dry_mass_thanks=True,
+                                        analyse_image_output='No image information'))
                 else:
                     return(render_template('ExperimentPage.html', \
                                         reactor_id=reactor_id, \
@@ -251,7 +253,8 @@ def experiment(reactor_id, experiment_id):
                                         incorrect_upload_code=False,
                                         twitter_thanks=False,
                                         incorrect_password_dry_mass=True,
-                                        dry_mass_thanks=False))
+                                        dry_mass_thanks=False,
+                                        analyse_image_output='No image information'))
 
             elif request.form['submit_button'] == 'SUBMIT IMAGE':
                 upload_code_provided = request.form['upload_validation_upload']
@@ -278,8 +281,11 @@ def experiment(reactor_id, experiment_id):
                         file_upload.save(f)
                         f.close()
                         
-                        exif_data = bigalgae.extract_exif_data(os.path.join(app.config['UPLOAD_FOLDER'], saved_filename))
+                        image_filepath = os.path.join(app.config['UPLOAD_FOLDER'], saved_filename)
                         
+                        exif_data = bigalgae.extract_exif_data(image_filepath)
+                        image_information = list(bigalgae.analyse_image(image_filepath))
+
                         reactor = reactors.find_and_modify({'_id': reactor_id, \
                                                 'experiments': {'$elemMatch': {'id': experiment_id}}}, \
                                                 {'$push': {'experiments.$.measurements': \
@@ -305,11 +311,13 @@ def experiment(reactor_id, experiment_id):
                                             experiment_dict=experiment_dict,
                                             incorrect_upload_code=False,
                                             twitter_thanks=True,
-                                            incorrect_password_dry_mass=False))
+                                            incorrect_password_dry_mass=False,
+                                            analyse_image_output=str(image_information)))
                 else:
                         return(render_template('ExperimentPage.html', \
                                             reactor_id=reactor_id, \
                                             experiment_dict=experiment_dict,
                                             incorrect_upload_code=True,
                                             twitter_thanks=False,
-                                            incorrect_password_dry_mass=False))
+                                            incorrect_password_dry_mass=False,
+                                            analyse_image_output='No image information'))

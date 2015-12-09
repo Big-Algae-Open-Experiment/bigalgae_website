@@ -3,9 +3,10 @@ import string
 # Required to send confirmation emails
 import smtplib
 from email.mime.text import MIMEText
-#import piexif
+import piexif
+import numpy
 import cv2
-import numpy as np
+from PIL import Image
 
 def generate_digit_code(N):
     ''' Returns a random string of digits of length N '''
@@ -155,7 +156,7 @@ def get_colour_contours_idx(sorted_corner_list, contour_list):
     top_right_point = corner_centres[2]
     bottom_right_point = [corner_centres[2][0], corner_centres[0][1]]
     
-    mean_grandp_area = np.mean(tuple([cv2.contourArea(contour_list[corner[2]]) \
+    mean_grandp_area = numpy.mean(tuple([cv2.contourArea(contour_list[corner[2]]) \
         for corner in sorted_corner_list]))
     
     left_vertical_distance = bottom_left_point[1]-top_left_point[1]
@@ -217,7 +218,7 @@ def get_central_window_idx(sorted_corner_list, contour_list):
         for corner in sorted_corner_list]
     centre_point = (int((corner_centres[0][0]+corner_centres[2][0])/2),
                     int((corner_centres[0][1]+corner_centres[2][1])/2))
-    mean_grandp_area = np.mean(tuple([cv2.contourArea(contour_list[corner[2]]) \
+    mean_grandp_area = numpy.mean(tuple([cv2.contourArea(contour_list[corner[2]]) \
         for corner in sorted_corner_list]))
     central_window_area = (23*((mean_grandp_area**0.5)/7))**2
     error = 500
@@ -282,16 +283,16 @@ def extract_algae_window(contour_list, hierarchy_list, original_image, \
               
     short_distance = 5.5*(distance/32.0)
     long_distance = 37.5*(distance/32.0)
-    total_distance = int(np.ceil(43.0*(distance/32.0)))
+    total_distance = int(numpy.ceil(43.0*(distance/32.0)))
     
-    model_points = np.array([ [short_distance,long_distance], \
+    model_points = numpy.array([ [short_distance,long_distance], \
         [short_distance,short_distance], [long_distance,short_distance] ], \
         dtype='float32')
-    corner_points = np.array(corner_centres, dtype='float32')
+    corner_points = numpy.array(corner_centres, dtype='float32')
               
     M = cv2.getAffineTransform(corner_points, model_points)
     
-    rotated_cropped_img = cv2.warpAffine( np.copy(original_image), M, \
+    rotated_cropped_img = cv2.warpAffine( numpy.copy(original_image), M, \
         (total_distance, total_distance) )
     return((0, rotated_cropped_img, 'Success'))
 
@@ -306,33 +307,33 @@ def extract_time_window(contour_list, hierarchy_list, original_image, \
 
     distance = abs(time_handle_centres[1][0] - time_handle_centres[0][0])
     one_unit = (distance / (81.5/2.3))
-    total_vertical_distance = int(np.ceil(17.0 * one_unit))
-    total_horizontal_distance = int(np.ceil((11.0+(81.5/2.3)) * one_unit))
+    total_vertical_distance = int(numpy.ceil(17.0 * one_unit))
+    total_horizontal_distance = int(numpy.ceil((11.0+(81.5/2.3)) * one_unit))
     
     short_horizontal_distance = 5.5 * one_unit
     long_vertical_distance = 12.5 * one_unit
     long_horizontal_distance = (5.5+(81.5/2.3)) * one_unit
     
-    model_points = np.array([ [short_horizontal_distance, \
+    model_points = numpy.array([ [short_horizontal_distance, \
         short_horizontal_distance], [long_horizontal_distance, \
         short_horizontal_distance], [(short_horizontal_distance + \
         long_horizontal_distance) / 2, long_vertical_distance] ], \
         dtype='float32')
-    time_handle_points = np.array(time_handle_centres, dtype='float32')
+    time_handle_points = numpy.array(time_handle_centres, dtype='float32')
               
     M = cv2.getAffineTransform(time_handle_points, model_points)
     
-    rotated_cropped_img = cv2.warpAffine( np.copy(original_image), M, \
+    rotated_cropped_img = cv2.warpAffine( numpy.copy(original_image), M, \
         (total_horizontal_distance, total_vertical_distance) )
     return((0, rotated_cropped_img, 'Success'))
     
 def threshold_image(original_image, gaussian_blur_kernel_size):
-    img_grey = cv2.cvtColor(np.copy(original_image),cv2.COLOR_BGR2GRAY)
+    img_grey = cv2.cvtColor(numpy.copy(original_image),cv2.COLOR_BGR2GRAY)
     img_grey = cv2.GaussianBlur(img_grey, (gaussian_blur_kernel_size, \
         gaussian_blur_kernel_size), 0)
     retval, thresh_img = cv2.threshold(img_grey, 0, 255, \
         cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    contours, hierarchy = cv2.findContours(np.copy(thresh_img), \
+    contours, hierarchy = cv2.findContours(numpy.copy(thresh_img), \
         cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     return((thresh_img, contours, hierarchy))
     
@@ -341,7 +342,7 @@ def get_central_time_window_idx(time_handle_list, contour_list):
         for handle in time_handle_list[0:2]]
     centre_point = (int((time_handle_centres[0][0] + \
         time_handle_centres[1][0])/2), int((time_handle_centres[0][1])/2))
-    mean_grandp_area = np.mean(tuple([cv2.contourArea(contour_list[handle[2]]) \
+    mean_grandp_area = numpy.mean(tuple([cv2.contourArea(contour_list[handle[2]]) \
         for handle in time_handle_list[0:2]]))
     central_window_area = 60.1*(mean_grandp_area/16.1)
     error = 500
@@ -356,8 +357,8 @@ def get_central_time_window_idx(time_handle_list, contour_list):
     return(match_idx)
     
 def convert_binary(binary_array, start_idx, end_idx):
-    return(np.sum(binary_array[start_idx:end_idx] * \
-        np.array([2**i for i in reversed(range(end_idx-start_idx))])))
+    return(numpy.sum(binary_array[start_idx:end_idx] * \
+        numpy.array([2**i for i in reversed(range(end_idx-start_idx))])))
 
 def get_time_and_sensor_information(binary_array):
     days = convert_binary(binary_array, 0, 5)
@@ -366,6 +367,13 @@ def get_time_and_sensor_information(binary_array):
     light = convert_binary(binary_array, 16, 24)
     return({'days': days, 'hours': hours, 'minutes': minutes, 'light': light})
 
+def sanity_check_time_vector(time_dict):
+    if time_dict['hours'] > 23:
+        return(False)
+    if time_dict['minutes'] > 59:
+        return(False)
+    return(True)
+
 def extract_time_and_sensor_information(img, contours, hierarchy):
     time_window_img = extract_time_window(contours, hierarchy, img, 5.0)
     if time_window_img[0] != 0:
@@ -373,7 +381,7 @@ def extract_time_and_sensor_information(img, contours, hierarchy):
     else:
         time_window_img = time_window_img[1]
     thresh_time_img, time_contours, time_hierarchy = threshold_image(time_window_img, 21)
-    time_img_grey = cv2.cvtColor(np.copy(time_window_img),cv2.COLOR_BGR2GRAY)
+    time_img_grey = cv2.cvtColor(numpy.copy(time_window_img),cv2.COLOR_BGR2GRAY)
     time_handles = get_time_handles(time_contours, time_hierarchy, 5.0)
     time_idx = get_central_time_window_idx(time_handles, time_contours)
     roi = rect_crop(time_contours[time_idx], time_img_grey, ((60.8/2.3),7))    
@@ -385,28 +393,36 @@ def extract_time_and_sensor_information(img, contours, hierarchy):
         for col_idx in range(16):
             cell = roi[(row_idx*cell_h):((row_idx+1)*cell_h), \
                 (col_idx*cell_w):((col_idx+1)*cell_w)]
-            cell_means.append(np.mean(cell))
-    cell_means = np.array(cell_means[0:24])
+            cell_means.append(numpy.mean(cell))
+    cell_means = numpy.array(cell_means[0:24])
     normalized_cell_means = (255 * (cell_means-min(cell_means))) / \
         (max(cell_means)-min(cell_means))
-    binary = np.array([int(150 < mean) for mean in normalized_cell_means])
+    binary = numpy.array([int(150 < mean) for mean in normalized_cell_means])
     time_information = get_time_and_sensor_information(binary)
     return((0, time_information, 'Finished'))
 
 def analyse_image(image_filepath):
-    img = cv2.imread(image_filepath, cv2.CV_LOAD_IMAGE_COLOR)
+    
+    img = Image.open(image_filepath)
+    img = numpy.asarray(img)
+    
+    #img = cv2.imread(image_filepath, cv2.CV_LOAD_IMAGE_COLOR)
+    
     width, height, channels = img.shape
     thresh_img, contours, hierarchy = threshold_image(img, 21)
+
     algae_window_img = extract_algae_window(contours, hierarchy, img, 5.0)
-    if algae_window_img[0] != 0:
-        return(algae_window_img)
-    else:
-        print('Yep!')
-        algae_window_img = algae_window_img[1]
-              
-            
+
     time_and_sensor = extract_time_and_sensor_information(img, contours, hierarchy)
-    
-    print(time_and_sensor)
-              
-    return((0, None, 'Finished'))
+
+
+
+    if algae_window_img[0] == 0 and time_and_sensor[0] == 1:
+        return((2, None, 'Algae window detected but no time window'))
+    elif algae_window_img[0] == 0 and time_and_sensor[0] == 0:
+        if sanity_check_time_vector(time_and_sensor[1]):
+            return((0, time_and_sensor[1], 'Algae window and time window detected'))
+        else:
+            return((2, None, 'Algae and time window detected but time was out of bounds'))
+    else:
+        return((1, None, 'No algae window detected'))
