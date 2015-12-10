@@ -62,7 +62,7 @@
            virtualenv=/var/www/html/baoe-app/env
            extra_args='-U'
       with_items:
-        - pymongo
+        - pymongo==2.8
         - flask
         - markdown
         - pdfkit

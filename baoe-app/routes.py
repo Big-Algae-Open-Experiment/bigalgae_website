@@ -10,7 +10,7 @@ from email.mime.text import MIMEText
 import smtplib
 import datetime
 
-client = MongoClient(connect=False)
+client = MongoClient()
 
 DB_NAME = 'bigalgae'
 
@@ -284,7 +284,7 @@ def experiment(reactor_id, experiment_id):
                         image_filepath = os.path.join(app.config['UPLOAD_FOLDER'], saved_filename)
                         
                         exif_data = bigalgae.extract_exif_data(image_filepath)
-                        image_information = list(bigalgae.analyse_image(image_filepath))
+                        image_information = bigalgae.analyse_image(image_filepath)
 
                         reactor = reactors.find_and_modify({'_id': reactor_id, \
                                                 'experiments': {'$elemMatch': {'id': experiment_id}}}, \

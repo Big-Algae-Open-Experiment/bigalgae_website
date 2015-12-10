@@ -403,11 +403,13 @@ def extract_time_and_sensor_information(img, contours, hierarchy):
 
 def analyse_image(image_filepath):
     
-    img = Image.open(image_filepath)
-    img = numpy.asarray(img)
+    #img = Image.open(image_filepath)
+    #img = numpy.asarray(img)
     
-    #img = cv2.imread(image_filepath, cv2.CV_LOAD_IMAGE_COLOR)
     
+    img = cv2.imread(image_filepath, cv2.CV_LOAD_IMAGE_COLOR)
+    return(str(type(cv2.imread(''))))
+
     width, height, channels = img.shape
     thresh_img, contours, hierarchy = threshold_image(img, 21)
 
