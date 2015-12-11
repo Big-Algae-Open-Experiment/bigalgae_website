@@ -208,7 +208,7 @@ def experiment(reactor_id, experiment_id):
                                 incorrect_upload_code=False,
                                 twitter_thanks=False,
                                 incorrect_password_dry_mass=False,
-                                analyse_image_output='No image information'))
+                                analyse_image_output=[0]))
         if request.method == 'POST':
             if request.form['submit_button'] == 'SUBMIT DRY MASS':
                 file_name_to_update = request.form['file_name_input']
@@ -245,7 +245,7 @@ def experiment(reactor_id, experiment_id):
                                         twitter_thanks=False,
                                         incorrect_password_dry_mass=False,
                                         dry_mass_thanks=True,
-                                        analyse_image_output='No image information'))
+                                        analyse_image_output=[0]))
                 else:
                     return(render_template('ExperimentPage.html', \
                                         reactor_id=reactor_id, \
@@ -254,7 +254,7 @@ def experiment(reactor_id, experiment_id):
                                         twitter_thanks=False,
                                         incorrect_password_dry_mass=True,
                                         dry_mass_thanks=False,
-                                        analyse_image_output='No image information'))
+                                        analyse_image_output=[0]))
 
             elif request.form['submit_button'] == 'SUBMIT IMAGE':
                 upload_code_provided = request.form['upload_validation_upload']
@@ -286,6 +286,19 @@ def experiment(reactor_id, experiment_id):
                         exif_data = bigalgae.extract_exif_data(image_filepath)
                         image_information = bigalgae.analyse_image(image_filepath)
 
+                        if image_information[0] == 0:
+                            image_binary_info = image_information[2]
+                        elif image_information[0] == 2:
+                            image_binary_info = {}
+                        elif image_information[0] == 1:
+                            return(render_template('ExperimentPage.html', \
+                                                reactor_id=reactor_id, \
+                                                experiment_dict=experiment_dict,
+                                                incorrect_upload_code=False,
+                                                twitter_thanks=False,
+                                                incorrect_password_dry_mass=False,
+                                                analyse_image_output=image_information))
+                            
                         reactor = reactors.find_and_modify({'_id': reactor_id, \
                                                 'experiments': {'$elemMatch': {'id': experiment_id}}}, \
                                                 {'$push': {'experiments.$.measurements': \
@@ -303,6 +316,7 @@ def experiment(reactor_id, experiment_id):
                                                     'dry_mass_prediction_mean': None, \
                                                     'dry_mass_prediction_sd': None, \
                                                     'upload_datetime': utc, \
+                                                    'image_binary_info': image_binary_info, \
                                                     'exif': exif_data}
                                                 }}, new=True)
                         experiment_dict = reactor['experiments'][int(experiment_id)-1]
@@ -312,7 +326,7 @@ def experiment(reactor_id, experiment_id):
                                             incorrect_upload_code=False,
                                             twitter_thanks=True,
                                             incorrect_password_dry_mass=False,
-                                            analyse_image_output=str(image_information)))
+                                            analyse_image_output=image_information))
                 else:
                         return(render_template('ExperimentPage.html', \
                                             reactor_id=reactor_id, \
@@ -320,4 +334,4 @@ def experiment(reactor_id, experiment_id):
                                             incorrect_upload_code=True,
                                             twitter_thanks=False,
                                             incorrect_password_dry_mass=False,
-                                            analyse_image_output='No image information'))
+                                            analyse_image_output=[0]))

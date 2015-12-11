@@ -1,29 +1,34 @@
-wget
-unzip
-cmake
+#!/bin/bash
 
-build-essential cmake pkg-config
-https://gist.github.com/christopher-hopper/9755310
-http://docs.opencv.org/master/dd/dd5/tutorial_py_setup_in_fedora.html#gsc.tab=0
-sudo yum install cmake
-sudo yum install python-devel numpy
-sudo yum install gcc gcc-c++
-sudo yum install gtk2-devel
-sudo yum install libdc1394-devel libv4l-devel ffmpeg-devel gstreamer-plugins-base-devel libjpeg-turbo-devel libpng-devel jasper-devel openexr-devel libtiff-devel libwebp-devel eigen3-devel tbb-devel
-sudo yum install libv4l-devel
-sudo yum install ffmpeg-devel
-sudo yum install gstreamer-plugins-base-devel
-sudo yum install libpng-devel
-sudo yum install libjpeg-turbo-devel libpng-devel jasper-devel openexr-devel libtiff-devel libwebp-devel eigen3-devel tbb-devel
-sudo yum install jasper-devel
-sudo yum install openexr-devel
-sudo yum install libtiff-devel
-sudo yum install libwebp-devel
-sudo yum install tbb-devel
-sudo yum install eigen3-devel tbb-devel
-
-wget 
+# How to increase the size of a Vagrant box
+#https://gist.github.com/christopher-hopper/9755310
+# How to install OpenCV 3
+#http://docs.opencv.org/master/dd/dd5/tutorial_py_setup_in_fedora.html#gsc.tab=0
 
 sudo yum install wget unzip cmake python-devel numpy gcc gcc-c++ gtk2-devel libdc1394-devel libv4l-devel ffmpeg-devel gstreamer-plugins-base-devel libpng-devel libjpeg-turbo-devel jasper-devel openexr-devel libtiff-devel libwebp-devel eigen3-devel
 
-cmake -D WITH_EIGEN=ON -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local ..
+# No package libdc1394-devel available.
+# No package ffmpeg-devel available.
+# No package eigen3-devel available.
+
+wget https://github.com/Itseez/opencv/archive/3.0.0.zip
+
+unzip 3.0.0.zip
+mkdir opencv-3.0.0/build
+cd opencv-3.0.0/build
+
+cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local ..
+
+# cmake -D WITH_EIGEN=ON -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local ..
+
+make
+
+sudo make install
+
+sudo mv /usr/local/lib/python2.7/site-packages/cv2.so /usr/lib/python2.7/site-packages
+
+rm -rf opencv-3.0.0/
+
+rm 3.0.0.zip
+
+scp -P 2222 vagrant@127.0.0.1:/usr/lib/python2.7/site-packages/cv2.so ./cv2.so

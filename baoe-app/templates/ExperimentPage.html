@@ -208,9 +208,16 @@
                         <p>Thanks so much for submitting a measurement! Share this on Twitter: <span class='social'><a href="https://twitter.com/share" class="twitter-share-button"{count} data-text="I just uploaded a measurement as part of the @big_algae Open Experiment!" data-hashtags="bigalgae"></a></span></p>
                     </div>
                 {% endif %}
-                <div class="alert alert-warning" role="alert">
-                    <p>{{ analyse_image_output }}</p>
-                </div>
+                {% if analyse_image_output[0] == 1 %}
+                    <div class="alert alert-danger" role="alert">
+                        <p>{{ analyse_image_output[2] }}</p>
+                    </div>
+                {% endif %}
+                {% if analyse_image_output[0] == 2 %}
+                    <div class="alert alert-warning" role="alert">
+                        <p>{{ analyse_image_output[2] }}</p>
+                    </div>
+                {% endif %}
                 <form id='pic_upload' enctype="multipart/form-data" onsubmit="return validateImageSubmission()" action="" method="post">
                     <div id="upload_picture-div">
                         <div class="form-group">

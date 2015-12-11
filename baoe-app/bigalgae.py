@@ -6,7 +6,6 @@ from email.mime.text import MIMEText
 import piexif
 import numpy
 import cv2
-from PIL import Image
 
 def generate_digit_code(N):
     ''' Returns a random string of digits of length N '''
@@ -93,21 +92,19 @@ def handle_test(contour_idx, contour_list, hierarchy_list, child_area,
 
 def get_corner_handles(contour_list, hierarchy_list, max_error):
     error = 0.0
-    matches = 0
-    while matches < 3 and error <= max_error:
-        matches = 0
+    corner_idx = []
+    while (not len(corner_idx)== 3) and error <= max_error:
         corner_idx = []
         for idx in range(0, len(contour_list)):
             if handle_test(idx, contour_list, hierarchy_list, \
                 9.0, 25.0, 49.0, error):
-                matches += 1
-                
                 parent_idx = hierarchy_list[:,idx][0][3]
                 grandparent_idx = hierarchy_list[:,parent_idx][0][3]
                 corner_idx.append([idx, parent_idx, grandparent_idx])
+        corner_idx = filter_handles(corner_idx, contour_list, 0.5)
         error += 0.2
 
-    if matches == 3:
+    if len(corner_idx)== 3:
         return(corner_idx)
     else:
         return(None)
@@ -241,33 +238,85 @@ def rect_crop(contour, image, size):
     roi = image[y1:y2, x1:x2]
     return(roi)
     
+def filter_handles(handle_list, contour_list, error):
+    areas_of_contours = [cv2.contourArea(contour_list[handle_list[idx][0]])
+                         for idx in range(len(handle_list))]
+
+    sums = [sum([int(within_range(area2, area1, area1*error)) for area2 in areas_of_contours]) for area1 in areas_of_contours]
+    if sums.count(3) == 3:
+        return([handle_list[idx] for idx in range(len(handle_list)) if sums[idx] == 3])
+    elif sums.count(3) > 3:
+        minimum = min(areas_of_contours)
+        return([handle_list[idx] for idx in range(len(handle_list)) if within_range(areas_of_contours[idx], minimum, minimum*error)])
+    else:
+        return([])
+    
 def get_time_handles(contour_list, hierarchy_list, max_error):
     error = 0.0
-    time_handle_idx = [None, None, None]
-    while None in time_handle_idx and error <= max_error:
-        time_handle_idx = [None, None, None]
+    time_handle_idx = []
+    while (not len(time_handle_idx) == 3) and error <= max_error:
+        time_handle_idx = []
         for idx in range(0, len(contour_list)):
             if handle_test(idx, contour_list, hierarchy_list, \
                 1.0, 25.0, 49.0, error):
                 parent_idx = hierarchy_list[:,idx][0][3]
                 grandparent_idx = hierarchy_list[:,parent_idx][0][3]
-                time_handle_idx[0] = [idx, parent_idx, grandparent_idx]
-            if handle_test(idx, contour_list, hierarchy_list, \
+                time_handle_idx.append([idx, parent_idx, grandparent_idx])
+            elif handle_test(idx, contour_list, hierarchy_list, \
                 1.0, 9.0, 49.0, error):
                 parent_idx = hierarchy_list[:,idx][0][3]
                 grandparent_idx = hierarchy_list[:,parent_idx][0][3]
-                time_handle_idx[1] = [idx, parent_idx, grandparent_idx]
-            if handle_test(idx, contour_list, hierarchy_list, \
+                time_handle_idx.append([idx, parent_idx, grandparent_idx])
+            elif handle_test(idx, contour_list, hierarchy_list, \
                 1.0, 9.0, 25.0, error):
                 parent_idx = hierarchy_list[:,idx][0][3]
                 grandparent_idx = hierarchy_list[:,parent_idx][0][3]
-                time_handle_idx[2] = [idx, parent_idx, grandparent_idx]
+                time_handle_idx.append([idx, parent_idx, grandparent_idx])
+        time_handle_idx = filter_handles(time_handle_idx, contour_list, 0.5)
         error += 0.2
-
-    if not None in time_handle_idx:
-        return(time_handle_idx)
+    
+    if len(time_handle_idx) == 3:
+        sorted_time_handles = sort_time_handles(time_handle_idx, contour_list)
+        return(sorted_time_handles)
     else:
         return(None)
+
+def sort_time_handles(time_handle_list, contour_list):
+    """sorts the time handles such that index 0 == left, index 1 == right
+    and 2 == middle"""
+
+    handle_centres = [get_centre_of_contour(contour_list[handle[2]]) \
+        for handle in time_handle_list]
+    combinations = [[0,1],[0,2],[1,2]]
+
+    distances = [ (handle_centres[i][0]-handle_centres[j][0])**2 + \
+                  (handle_centres[i][1]-handle_centres[j][1])**2 \
+                  for (i, j) in combinations ]
+    comb_idx = 0
+    middle = 2
+              
+    for idx in range(1, len(distances)):
+        if distances[idx] == max(distances):
+            if idx == 1:
+                comb_idx = 1
+                middle = 1
+            elif idx == 2:
+                comb_idx = 2
+                middle = 0
+                
+    time_handle_list = [time_handle_list[combinations[comb_idx][0]],
+                        time_handle_list[combinations[comb_idx][1]],
+                        time_handle_list[middle]]
+         
+    index_0_parent_area = cv2.contourArea(contour_list[time_handle_list[0][1]])            
+    index_1_parent_area = cv2.contourArea(contour_list[time_handle_list[1][1]])
+    
+    if index_1_parent_area > index_0_parent_area:
+        time_handle_list = [time_handle_list[1],
+                            time_handle_list[0],
+                            time_handle_list[2]]
+    return(time_handle_list)
+
 
 def extract_algae_window(contour_list, hierarchy_list, original_image, \
     max_error):
@@ -299,6 +348,7 @@ def extract_algae_window(contour_list, hierarchy_list, original_image, \
 def extract_time_window(contour_list, hierarchy_list, original_image, \
     max_error):
     time_handles = get_time_handles(contour_list, hierarchy_list, max_error)
+    
     if time_handles == None:
         return((1, None, 'No time handle detected'))
     
@@ -403,21 +453,13 @@ def extract_time_and_sensor_information(img, contours, hierarchy):
 
 def analyse_image(image_filepath):
     
-    #img = Image.open(image_filepath)
-    #img = numpy.asarray(img)
-    
-    
     img = cv2.imread(image_filepath, cv2.CV_LOAD_IMAGE_COLOR)
-    return(str(type(cv2.imread(''))))
 
     width, height, channels = img.shape
     thresh_img, contours, hierarchy = threshold_image(img, 21)
-
     algae_window_img = extract_algae_window(contours, hierarchy, img, 5.0)
 
     time_and_sensor = extract_time_and_sensor_information(img, contours, hierarchy)
-
-
 
     if algae_window_img[0] == 0 and time_and_sensor[0] == 1:
         return((2, None, 'Algae window detected but no time window'))

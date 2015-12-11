@@ -10,7 +10,8 @@
 
     # I had to do this as SELinux was reacting poorly with numpy, as numpy uses
     # shared C extensions https://code.google.com/p/modwsgi/wiki/ApplicationIssues#Secure_Variants_Of_UNIX
-    - selinux: policy=targeted state=permissive
+    - selinux: policy=targeted
+               state=permissive
            
     - name: add the epel repository
       yum: name=epel-release
@@ -35,8 +36,6 @@
         - urw-fonts
         - opencv-python
         - gcc # required for numpy
-        - libjpeg-devel # required for image
-        - zlib-devel # required for image
 
     - name: start firewalld
       service: name=firewalld
@@ -68,10 +67,6 @@
         - pdfkit
         - piexif
         - numpy
-        - image
-            
-    #- name: install opencv to virtual environment
-      #script: ../server_configuration_files/setup_opencv.sh
             
     - name: copy across website files
       copy: src=../baoe-app/

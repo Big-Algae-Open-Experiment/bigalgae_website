@@ -7,7 +7,11 @@
     - name: copy across website files
       copy: src=../baoe-app/
             dest=/var/www/html/baoe-app/app
-            
+
+    - name: copy across apache configuration file
+      copy: src=../server_configuration_files/baoe-app.conf
+            dest=/etc/httpd/conf.d/baoe-app.conf
+
     - name: restart apache
       service: name=httpd
                state=restarted
