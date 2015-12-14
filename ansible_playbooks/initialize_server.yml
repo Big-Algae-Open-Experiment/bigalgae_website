@@ -36,6 +36,7 @@
         - urw-fonts
         - opencv-python
         - gcc # required for numpy
+        - gtk2-devel # required for OpenCV
 
     - name: start firewalld
       service: name=firewalld
