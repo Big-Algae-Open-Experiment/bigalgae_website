@@ -33,3 +33,6 @@ variable_collection.insert({'_id': 'counter', \
                         
 variable_collection.insert({'_id': 'cache_key', \
                             'key_str': 'asdhHASDKh!!*&%SASDKH8723as112'})
+
+variable_collection.insert({'_id': 'failed_image_analysis', \
+                            'list': []})

@@ -264,12 +264,12 @@ def experiment(reactor_id, experiment_id):
                     od680_list = bigalgae.process_advanced_measurements_string(request.form['od680'])
                     od750_list = bigalgae.process_advanced_measurements_string(request.form['od750'])
                     if file_upload and allowed_file(file_upload.filename):
-                        filename = secure_filename(file_upload.filename)
+                        original_filename = secure_filename(file_upload.filename)
                         utc = datetime.datetime.utcnow().isoformat()
                         present = True
                         while present:
                             try:
-                                saved_filename = bigalgae.generate_validation_key(32) + '.' + filename.rsplit('.', 1)[1]
+                                saved_filename = bigalgae.generate_validation_key(32) + '.' + original_filename.rsplit('.', 1)[1]
                                 fd = os.open(os.path.join(app.config['UPLOAD_FOLDER'], saved_filename), os.O_WRONLY | os.O_CREAT | os.O_EXCL)
                                 present = False
                             except OSError, e:
@@ -291,6 +291,19 @@ def experiment(reactor_id, experiment_id):
                         elif image_information[0] == 2:
                             image_binary_info = {}
                         elif image_information[0] == 1:
+                            
+                            global_var_collection = db[GLOBAL_VARIABLE_COLLECTION]
+                            
+                            global_var_collection.find_and_modify({'_id': 'failed_image_analysis'},
+                                                                  {'$push': {'list':
+                                                                        {'file_name': saved_filename , \
+                                                                        'cell_count': cell_count_list, \
+                                                                        'od680': od680_list, \
+                                                                        'od750': od750_list, \
+                                                                        'upload_datetime': utc, \
+                                                                        'original_filename': original_filename, \
+                                                                        'exif': exif_data}}})                            
+                            
                             return(render_template('ExperimentPage.html', \
                                                 reactor_id=reactor_id, \
                                                 experiment_dict=experiment_dict,
@@ -317,6 +330,7 @@ def experiment(reactor_id, experiment_id):
                                                     'dry_mass_prediction_sd': None, \
                                                     'upload_datetime': utc, \
                                                     'image_binary_info': image_binary_info, \
+                                                    'original_filename': original_filename, \
                                                     'exif': exif_data}
                                                 }}, new=True)
                         experiment_dict = reactor['experiments'][int(experiment_id)-1]
