@@ -43,6 +43,14 @@ def landing():
 def about():
     return(render_template('About.html'))
 
+@app.route('/us')
+def us():
+    return(render_template('AboutUs.html'))
+
+@app.route('/science')
+def science():
+    return(render_template('Science.html'))
+
 @app.route('/thanks')
 def thanks():
     return(render_template('ThanksReactor.html'))

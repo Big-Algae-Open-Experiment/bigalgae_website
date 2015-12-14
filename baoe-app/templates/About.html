@@ -2,5 +2,77 @@
 {% block title %}About - Big Algae Open Experiment{% endblock %}
 {% block body %}
     {{ super() }}
-    <h2>About</h2>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12" >
+                <h2>About the project</h2>
+                <div class="jumbotron">
+                    <p>Algae are amazing: they recycle over half of the carbon
+                        dioxide we breathe out and are important for many food
+                        chains. However, we still understand very little about
+                        how they grow. In future, we may wish to grow algae for
+                        food, fuel, or to clean up wastewater so we need to
+                        understand more about their biology!</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6" >
+             <p align='justify'>With the above message in mind, we have set up
+                the Big Algae Open Experiment to help us extend our knowledge
+                of algae by performing the biggest parallel algae experiment in
+                history! We are inviting Universities and citizen scientists to
+                participate in an open-source data collection experiment on
+                outdoor microalgal growth. Up and down the UK, we'll be running
+                experiments using a bioreactor we have designed and asking
+                people to submit their recordings of how well the algae are
+                growing. Following and recording the algal growth will be easy
+                for everyone to do, even if they have no previous scientific
+                experience, thanks to this website!</p>
+                
+            <p align='justify'>The Big Algae Open Experiment operates based on
+                three steps:</p>
+            <h4>1) Create an open-source photobioreactor</h4>
+            <p align='justify'>The photobioreactor we will use to grow the algae
+                is designed to be inexpensive, easy to build and simple to use.
+                The current prototype is an airlift-type reactor built from
+                readily available materials, using an aquarium pump for sparging
+                of air. Parts for the reactor were produced using a laser-cutter,
+                a widely-available 'maker' tool. There will be instructions for
+                an Arduino based monitoring system if you'd like to collect data
+                about light and temperature too. We will be publishing the
+                instructions here on the website for you to follow.</p>
+            <h4>2) Create a web based application for the Big Algae Open Experiment</h4>
+            <p align='justify'>While some people have access to a lab, many more
+                people have access to a smartphone. We wanted to create a way to
+                use the camera on your phone to collect data on algal growth,
+                so we've made an web based app to enable many more of you to get
+                involved! At Big Algae HQ, we've been testing our app with
+                laboratory growth data to produce standard curves. This is a
+                fancy way of saying that by snapping a picture using the app,
+                we can translate the image into data on how well the algae are
+                growing.</p>
+            <h4>3) Organise the Big Algae Open Experiment</h4>
+            <p align='justify'>The Big Algae Open Experiment will operate as a
+                hub-and-spoke model; we will ask Universities to sign up
+                for the project and recruit partner schools or community groups.
+                Everybody will run the same experiment. We would like you to visit
+                each other and work together to learn more about algae. This will also
+                enable the researchers at Universities to show people around
+                their lab, and explain more about their jobs. It may even
+                inspire some of you to think about a career in science! Throughout
+                the month, growth data will be uploaded to our app and at the
+                end of the month will be analysed. During the month you'll be
+                able to compare how well your bioreactor is performing compared
+                to other schools and Universities. At the end of the month, we
+                will be able to look for correlations between environmental
+                conditions and biomass growth. Once the Big Algae Open Experiment
+                has finished, the dataset will be made publicly available for other
+                researchers to benefit from.</p>
+            </div>
+            <div class="col-md-6" >
+                <img class="img-responsive center-block" style="width:100%" src="{{ url_for('static', filename='img/about.svg') }}" alt="Visual Abstract">
+            </div>
+        </div>
+    </div>
 {% endblock %}
