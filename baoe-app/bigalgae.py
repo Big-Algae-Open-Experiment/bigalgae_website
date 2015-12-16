@@ -464,9 +464,7 @@ def convert_binary_time_out_to_seconds(binary_time_out):
     if binary_time_out == None:
         return(None)
     else:
-        return(60 * (binary_time_out['minutes'] +
-                     (60 * (binary_time_out['hours'] +
-                            (24 * binary_time_out['days'])))))
+        return(60 * binary_time_out['minutes'])
 
 def convert_exif_time_to_seconds_since_epoch(exif_time):
     print(exif_time)
