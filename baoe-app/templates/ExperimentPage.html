@@ -8,6 +8,10 @@
         }
     </style>
     <script type="text/javascript">
+    
+        var experiment_dict = {{ experiment_dict|tojson|safe }};
+    
+    
         $(document).ready(function() {
             var file_name_input = $('#file_name_input');
             var submit_button = $('input[value="SUBMIT DRY MASS"]');

@@ -6,6 +6,7 @@ from email.mime.text import MIMEText
 import piexif
 import numpy
 import cv2
+import time, calendar
 
 def generate_digit_code(N):
     ''' Returns a random string of digits of length N '''
@@ -458,3 +459,68 @@ def analyse_image(image_filepath):
         return((0, time_and_sensor[1], 'Algae window and time window detected'))
     else:
         return((1, None, 'No algae window detected'))
+
+def convert_binary_time_out_to_seconds(binary_time_out):
+    if binary_time_out == None:
+        return(None)
+    else:
+        return(60 * (binary_time_out['minutes'] +
+                     (60 * (binary_time_out['hours'] +
+                            (24 * binary_time_out['days'])))))
+
+def convert_exif_time_to_seconds_since_epoch(exif_time):
+    print(exif_time)
+    if exif_time == None:
+        return(None)
+    else:
+        return(calendar.timegm(time.strptime(exif_time, '%Y:%m:%d %H:%M:%S')))
+
+def min_no_none(input_list):
+    return(min([element for element in input_list if not element == None]))
+
+def normalize(value, minimum):
+    if value == None:
+        return(None)
+    else:
+        return(value-minimum)
+
+def calculate_magic_times(binary_times, exif_times, upload_times):
+    binary_upload_offset = 0
+    exif_upload_offset = 0
+    binary_min_idx = None
+    exif_min_idx = None
+    for idx in range(len(upload_times)):
+        if (not binary_times[idx] == None) and binary_min_idx == None:
+            binary_min_idx = idx
+        if (not exif_times[idx] == None) and exif_min_idx == None:
+            exif_min_idx = idx
+    
+
+def return_times(measurements_dict):
+    binary_times = []
+    upload_times = []
+    exif_times = []
+    for measurement in measurements_dict:
+        if 'DateTime' in measurement['exif'].keys():
+            exif_times.append(measurement['exif']['DateTime'])
+        else:
+            exif_times.append(None)
+        if not measurement['image_binary_info'] == {}:
+            binary_times.append(measurement['image_binary_info'])
+        else:
+            binary_times.append(None)
+        upload_times.append(measurement['upload_datetime'])
+    seconds_since_epoch = [calendar.timegm(time.strptime(t, '%Y-%m-%dT%H:%M:%S.%f')) for t in upload_times]
+    seconds_since_epoch = [t-min(seconds_since_epoch) for t in seconds_since_epoch]
+    binary_times = [convert_binary_time_out_to_seconds(x) for (y,x) in
+                    sorted(zip(seconds_since_epoch,binary_times), key=lambda pair: pair[0])]
+    binary_times = [normalize(t, min_no_none(binary_times)) for t in binary_times]
+    upload_times = sorted(seconds_since_epoch)
+    exif_times = [convert_exif_time_to_seconds_since_epoch(x) for (y,x) in
+                  sorted(zip(seconds_since_epoch,exif_times), key=lambda pair: pair[0])]
+    exif_times = [normalize(t, min_no_none(exif_times)) for t in exif_times]
+    return({'upload': upload_times,
+            'exif': exif_times,
+            'binary': binary_times})
+
+    
