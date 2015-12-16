@@ -295,7 +295,7 @@ def experiment(reactor_id, experiment_id):
                         image_information = bigalgae.analyse_image(image_filepath)
 
                         if image_information[0] == 0:
-                            image_binary_info = image_information[2]
+                            image_binary_info = image_information[1]
                         elif image_information[0] == 2:
                             image_binary_info = {}
                         elif image_information[0] == 1:

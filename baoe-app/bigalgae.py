@@ -411,18 +411,9 @@ def convert_binary(binary_array, start_idx, end_idx):
         numpy.array([2**i for i in reversed(range(end_idx-start_idx))])))
 
 def get_time_and_sensor_information(binary_array):
-    days = convert_binary(binary_array, 0, 5)
-    hours = convert_binary(binary_array, 5, 10)
-    minutes = convert_binary(binary_array, 10, 16)
+    minutes = convert_binary(binary_array, 0, 16)
     light = convert_binary(binary_array, 16, 24)
-    return({'days': days, 'hours': hours, 'minutes': minutes, 'light': light})
-
-def sanity_check_time_vector(time_dict):
-    if time_dict['hours'] > 23:
-        return(False)
-    if time_dict['minutes'] > 59:
-        return(False)
-    return(True)
+    return({'minutes': minutes, 'light': light})
 
 def extract_time_and_sensor_information(img, contours, hierarchy):
     time_window_img = extract_time_window(contours, hierarchy, img, 5.0)
@@ -464,9 +455,6 @@ def analyse_image(image_filepath):
     if algae_window_img[0] == 0 and time_and_sensor[0] == 1:
         return((2, None, 'Algae window detected but no time window'))
     elif algae_window_img[0] == 0 and time_and_sensor[0] == 0:
-        if sanity_check_time_vector(time_and_sensor[1]):
-            return((0, time_and_sensor[1], 'Algae window and time window detected'))
-        else:
-            return((2, None, 'Algae and time window detected but time was out of bounds'))
+        return((0, time_and_sensor[1], 'Algae window and time window detected'))
     else:
         return((1, None, 'No algae window detected'))
