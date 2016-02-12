@@ -424,6 +424,8 @@ def extract_time_and_sensor_information(img, contours, hierarchy):
     thresh_time_img, time_contours, time_hierarchy = threshold_image(time_window_img, 21)
     time_img_grey = cv2.cvtColor(numpy.copy(time_window_img),cv2.COLOR_BGR2GRAY)
     time_handles = get_time_handles(time_contours, time_hierarchy, 5.0)
+    if time_handles == None:
+        return((1, None, 'No time handle detected'))
     time_idx = get_central_time_window_idx(time_handles, time_contours)
     roi = rect_crop(time_contours[time_idx], time_img_grey, ((60.8/2.3),7))    
     roi_h, roi_w = roi.shape
@@ -447,7 +449,10 @@ def analyse_image(image_filepath):
     img = cv2.imread(image_filepath, cv2.CV_LOAD_IMAGE_COLOR)
 
     width, height, channels = img.shape
-    thresh_img, contours, hierarchy = threshold_image(img, 21)
+    if width < 200:
+        thresh_img, contours, hierarchy = threshold_image(img, 5)
+    else:
+        thresh_img, contours, hierarchy = threshold_image(img, 21)
     algae_window_img = extract_algae_window(contours, hierarchy, img, 5.0)
 
     time_and_sensor = extract_time_and_sensor_information(img, contours, hierarchy)

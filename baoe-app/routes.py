@@ -292,6 +292,11 @@ def experiment(reactor_id, experiment_id):
                         image_filepath = os.path.join(app.config['UPLOAD_FOLDER'], saved_filename)
                         
                         exif_data = bigalgae.extract_exif_data(image_filepath)
+                        if 'MakerNote' in exif_data.keys():
+                            try:
+                                unicode(exif_data['MakerNote'], 'utf-8')
+                            except UnicodeDecodeError:
+                                del(exif_data['MakerNote'])
                         image_information = bigalgae.analyse_image(image_filepath)
 
                         if image_information[0] == 0:

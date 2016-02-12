@@ -129,78 +129,6 @@
                 <h4>Experiment {{ experiment_dict['id'] }}</h4>
                 <h4>Species: {{ experiment_dict['species'] }}</h4>
                 <h4>Number of Measurement: {{ experiment_dict['measurements']|length }}</h4>
-                <ul>
-                    {% for measurement in experiment_dict['measurements'] %}
-                        <li class="measurement_entry" file_name="{{ measurement['file_name'] }}"><a>{{ measurement['file_name'] }}</a>
-                        <ul>
-                            <li>Uploaded: {{ measurement['upload_datetime'] }}</li>
-                            <li>Cell count: {{ measurement['cell_count'] }}</li>
-                            <li>OD680: {{ measurement['od680'] }}</li>
-                            <li>OD750: {{ measurement['od750'] }}</li>
-                            <li>Dry Mass: {{ measurement['dry_mass'] }}</li>
-                        </ul>
-                        </li>
-                    {% endfor %}
-                </ul>
-                <div class="panel-group" id="accordion">
-                    <div class="panel panel-default">
-                        <div data-toggle="collapse" data-parent="#accordion" data-target="#add_dry_mass" class="panel-heading" style="cursor: pointer;">
-                            <h4 class="panel-title">Add dry mass measurements (Click here to expand)</h4>
-                        </div>
-                        <div id="add_dry_mass" class="panel-collapse collapse {% if incorrect_password_dry_mass or dry_mass_thanks%}in{% endif %}">
-                            <div class="panel-body">
-                                {% if dry_mass_thanks %}
-                                    <div class="alert alert-success" role="alert">
-                                        <p>Thank you for updating a measurement with dry mass information!</p>
-                                    </div>
-                                {% endif %}
-                                <p>Please separate repeat measurements with a comma e.g. 123.45,678.90,123.45</p>
-                                <form id="dm_upload" method="post" onsubmit="return validateDryMassForm()">
-                                    <div class="form-group">
-                                        <label for="file_name_input">File Name</label>
-                                        <input readonly="readonly" type="name" class="form-control" name="file_name_input" id="file_name_input">
-                                    </div>
-                                    <div id="dry_mass-div">
-                                        <div class="form-group">
-                                            <label for="dry_mass">Dry mass (g / l)</label>
-                                            <input type="name" class="form-control" name="dry_mass" id="dry_mass">
-                                        </div>
-                                        <p id="dry_mass-error" class="hidden">Please enter valid measurements using only digits, commas(,) and points(.).</p>
-                                    </div>
-                                    
-                                    <div id="upload_validation_dry_mass-div" {% if incorrect_password_dry_mass %} class="alert alert-danger" {% endif %}>
-                                        <div class="form-group">
-                                            <label for="upload_validation_dry_mass">4 digit Upload Code</label>
-                                            <input type="name" class="form-control" name="upload_validation_dry_mass" id="upload_validation_dry_mass" required>
-                                        </div>
-                                        {% if incorrect_password_dry_mass %}
-                                        <p>Sorry, your upload code code was incorrect, please try again.</p>
-                                        {% endif %}
-                                        <p id="upload_validation_dry_mass-error" class="hidden">Please enter a 4 digit upload code</p>
-                                    </div>
-                                    <center><input type="submit" class="btn btn-success" name="submit_button" value="SUBMIT DRY MASS" disabled></center>
-                                </form>                         
-                            </div>
-                        </div>
-                    </div>
-                    <div class="panel panel-default">
-                        <div data-toggle="collapse" data-parent="#accordion" data-target="#qr_code" class="panel-heading" style="cursor: pointer;">
-                            <h4 class="panel-title">Display QR Code (Click here to expand)</h4>
-                        </div>
-                        <div id="qr_code" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                <p>This QR code links to this reactor page</p>
-                                <div id='qrcode'></div>
-                                <script type="text/javascript">
-                                    new QRCode(document.getElementById("qrcode"),
-                                            window.location.href);
-                                </script>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> 
-            <div class="col-md-6">
                 <h2>Upload</h2>
                 {% if twitter_thanks %}
                     <div class="alert alert-success" role="alert">
@@ -279,6 +207,80 @@
                     </div>
                     <center><input type="submit" class="btn btn-success" name="submit_button" value="SUBMIT IMAGE"></center>
                 </form>
+            </div> 
+            <div class="col-md-6">
+                <h2>Previous Measurements</h2>
+                <p>By clicking on a measurement, you can add dry cell mass information to a measurement</p>
+                <ul>
+                    {% for measurement in experiment_dict['measurements'] %}
+                        <li class="measurement_entry" file_name="{{ measurement['file_name'] }}"><a>{{ measurement['file_name'] }}</a>
+                        <ul>
+                            <li>Uploaded: {{ measurement['upload_datetime'] }}</li>
+<!--                            <li>Cell count: {{ measurement['cell_count'] }}</li>-->
+<!--                            <li>OD680: {{ measurement['od680'] }}</li>-->
+<!--                            <li>OD750: {{ measurement['od750'] }}</li>-->
+<!--                            <li>Dry Mass: {{ measurement['dry_mass'] }}</li>-->
+                        </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div data-toggle="collapse" data-parent="#accordion" data-target="#add_dry_mass" class="panel-heading" style="cursor: pointer;">
+                            <h4 class="panel-title">Add dry mass measurements (Click here to expand)</h4>
+                        </div>
+                        <div id="add_dry_mass" class="panel-collapse collapse {% if incorrect_password_dry_mass or dry_mass_thanks%}in{% endif %}">
+                            <div class="panel-body">
+                                {% if dry_mass_thanks %}
+                                    <div class="alert alert-success" role="alert">
+                                        <p>Thank you for updating a measurement with dry mass information!</p>
+                                    </div>
+                                {% endif %}
+                                <p>Please separate repeat measurements with a comma e.g. 123.45,678.90,123.45</p>
+                                <form id="dm_upload" method="post" onsubmit="return validateDryMassForm()">
+                                    <div class="form-group">
+                                        <label for="file_name_input">File Name</label>
+                                        <input readonly="readonly" type="name" class="form-control" name="file_name_input" id="file_name_input">
+                                    </div>
+                                    <div id="dry_mass-div">
+                                        <div class="form-group">
+                                            <label for="dry_mass">Dry mass (g / l)</label>
+                                            <input type="name" class="form-control" name="dry_mass" id="dry_mass">
+                                        </div>
+                                        <p id="dry_mass-error" class="hidden">Please enter valid measurements using only digits, commas(,) and points(.).</p>
+                                    </div>
+                                    
+                                    <div id="upload_validation_dry_mass-div" {% if incorrect_password_dry_mass %} class="alert alert-danger" {% endif %}>
+                                        <div class="form-group">
+                                            <label for="upload_validation_dry_mass">4 digit Upload Code</label>
+                                            <input type="name" class="form-control" name="upload_validation_dry_mass" id="upload_validation_dry_mass" required>
+                                        </div>
+                                        {% if incorrect_password_dry_mass %}
+                                        <p>Sorry, your upload code code was incorrect, please try again.</p>
+                                        {% endif %}
+                                        <p id="upload_validation_dry_mass-error" class="hidden">Please enter a 4 digit upload code</p>
+                                    </div>
+                                    <center><input type="submit" class="btn btn-success" name="submit_button" value="SUBMIT DRY MASS" disabled></center>
+                                </form>                         
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div data-toggle="collapse" data-parent="#accordion" data-target="#qr_code" class="panel-heading" style="cursor: pointer;">
+                            <h4 class="panel-title">Display QR Code (Click here to expand)</h4>
+                        </div>
+                        <div id="qr_code" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <p>This QR code links to this reactor page</p>
+                                <div id='qrcode'></div>
+                                <script type="text/javascript">
+                                    new QRCode(document.getElementById("qrcode"),
+                                            window.location.href);
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div> 
         </div>
     </div>
