@@ -1,0 +1,3 @@
+[submodule "baoe-app/bigalgae"]
+	path = baoe-app/bigalgae
+	url = https://github.com/Big-Algae-Open-Experiment/bigalgae.git
