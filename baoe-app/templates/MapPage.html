@@ -14,45 +14,57 @@
     <script>
         function addMarkersToMap(reactor_array) {
             infowindows = [];
-        
+
             var bounds = new google.maps.LatLngBounds();
-            reactor_array.forEach(function(reactor) {
-                var contentString = '<div id="content">'+
-                    '<div id="siteNotice"></div>'+
-                    '<a href="' + reactor.reactor_url + '"> <h3>Bioreactor ' + reactor._id + ' </h3></a>'+
-                    '<h4>Team Name: ' + reactor.name + '</h4>' +
-                    '<h4>Location: ' + reactor.location + '</h4>' +
-                    '<h4>Number of experiments: ' + reactor.experiment_number + '</h4>' +
-                    '</div>'
 
+            var reactor_groups = {}
+            reactor_array.forEach(function(reactor, index) {
+                var long_lat_str = reactor['latitude'].toString().concat(reactor['longitude']);
+                reactor_groups[long_lat_str] = reactor_groups[long_lat_str] || [];
+                reactor_groups[long_lat_str].push(index);
+            });
+            for (reactor_group in reactor_groups) {
+                var contentString = ''
+                reactor_groups[reactor_group].forEach(function(reactor_idx) {
+                    var reactor = reactor_array[reactor_idx];
+                    contentString = contentString +
+                        '<div id="content">'+
+                        '<div id="siteNotice"></div>'+
+                        '<a href="' + reactor.reactor_url + '"> <h3>Bioreactor ' + reactor._id + ' </h3></a>'+
+                        '<h4>Team Name: ' + reactor.name + '</h4>' +
+                        '<h4>Location: ' + reactor.location + '</h4>' +
+                        '<h4>Number of experiments: ' + reactor.experiment_number + '</h4>' +
+                        '</div>'
+                });
+                var reactor = reactor_array[reactor_groups[reactor_group][0]];
                 var reactor_position = {lat: reactor.latitude, lng: reactor.longitude};
-
                 var infowindow = new google.maps.InfoWindow({
                     content: contentString,
                     maxWidth: 250
                 });
-
+                if (reactor_groups[reactor_group].length == 1) {
+                    var title_string = 'Bioreactor ' + reactor._id;
+                } else if (reactor_groups[reactor_group].length > 1) {
+                    var title_string = reactor_groups[reactor_group].length.toString() + ' bioreactors';
+                }
                 var marker = new google.maps.Marker({
                     map: map,
                     position: reactor_position,
-                    title: 'Bioreactor ' + reactor._id
+                    title: title_string
                 });
-                
                 // Mousedown instead of click to make it mobile friendly http://goo.gl/yIQ3sY
                 marker.addListener('mousedown', function() {
-                    for (i = 0; i < infowindows.length; i++) { 
+                    for (i = 0; i < infowindows.length; i++) {
                         infowindows[i].close();
-                    }                    
+                    }
                     infowindow.open(map, marker);
                 });
-
                 infowindows.push(infowindow);
-                
-                bounds.extend(new google.maps.LatLng(reactor.latitude, reactor.longitude));
-            });
+                bounds.extend(new google.maps.LatLng(reactor_position.lat, reactor_position.lng));
+            };
             map.fitBounds(bounds);
         }
-        
+
         function initReactorMap() {
             map = new google.maps.Map(document.getElementById('map'), {    //// GLOBAL
                 center: {lat: 54.468057, lng: -3.038273},
@@ -74,7 +86,7 @@
             var map_height = document.documentElement.clientHeight - document.getElementById('map').offsetTop;
             var map_element = $('#map').css('height', map_height + 'px');
         };
-    
+
         $(document).ready(function() {
             resizeMap();
             window.addEventListener('resize', resizeMap);
@@ -86,7 +98,7 @@
 {% endblock %}
 {% block body %}
     {{ super() }}
-    
+
     <div class="container">
         <div class="row">
             <div class="col-md-9">
