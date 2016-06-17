@@ -84,9 +84,9 @@ def register():
     elif request.method == 'POST':
         db = client[DB_NAME]
         reactors = db[BIOREACTOR_COLLECTION]
-        
+
         global_var_collection = db[GLOBAL_VARIABLE_COLLECTION]
-        
+
         user_data = request.get_json()
         upload_code = bigalgae.generate_digit_code(4)
         experiment_validation_code = bigalgae.generate_digit_code(6)
@@ -97,7 +97,7 @@ def register():
         while not success:
             try:
                 id_str = returnNewID(global_var_collection)
-                
+
                 reactors.insert({'_id': id_str, \
                                 'name': user_data['name'], \
                                 'location': user_data['location'], \
@@ -127,7 +127,7 @@ def register():
             error_with_email = False
         except smtplib.SMTPAuthenticationError:
             error_with_email = True
-        
+
         return(url_for('thanks'))
 
 @app.route('/reactor/<reactor_id>', methods=['GET', 'POST'])
@@ -150,7 +150,7 @@ def reactor(reactor_id):
             utc = datetime.datetime.utcnow().isoformat()
             if experiment_validation_code == user_code:
                 experiment_id = str(len(id_search[0]['experiments']) + 1)
-                
+
                 reactors.find_and_modify({'_id': reactor_id}, \
                                         {'$push': {'experiments': \
                                             {'id': experiment_id, \
@@ -181,7 +181,7 @@ def validate(reactor_id):
         else:
             reactors.find_and_modify({'_id': reactor_id}, \
                                      {'$set': {'validated': True}})
-            
+
             info_email = MIMEText(render_template('FurtherInformationEmail', \
                                                   experiment_validation_code = id_search[0]['experiment_validation_code'], \
                                                   upload_code = id_search[0]['upload_code'], \
@@ -189,13 +189,13 @@ def validate(reactor_id):
             info_email['Subject'] = 'Big Algae Open Experiment Important Information'
 
             recipient = id_search[0]['email']
-            
+
             try:
                 bigalgae.send_email(info_email, recipient)
                 error_with_email = False
             except smtplib.SMTPAuthenticationError:
                 error_with_email = True
-               
+
             return(render_template('SuccessfulValidation.html', reactor_id = reactor_id, error_with_email = error_with_email))
 
 @app.route('/reactor/<reactor_id>/experiment/<experiment_id>', methods=['GET', 'POST'])
@@ -243,9 +243,9 @@ def experiment(reactor_id, experiment_id):
                                             {'$push': {'experiments.$.measurements': \
                                                 measurement_to_update
                                             }}, new=True)
-                    
+
                     experiment_dict = reactor['experiments'][int(experiment_id)-1]
-                    
+
                     return(render_template('ExperimentPage.html', \
                                         reactor_id=reactor_id, \
                                         experiment_dict=experiment_dict,
@@ -288,15 +288,16 @@ def experiment(reactor_id, experiment_id):
                         f = os.fdopen(fd, 'w')
                         file_upload.save(f)
                         f.close()
-                        
+
                         image_filepath = os.path.join(app.config['UPLOAD_FOLDER'], saved_filename)
-                        
+
                         exif_data = bigalgae.extract_exif_data(image_filepath)
-                        if 'MakerNote' in exif_data.keys():
-                            try:
-                                unicode(exif_data['MakerNote'], 'utf-8')
-                            except UnicodeDecodeError:
-                                del(exif_data['MakerNote'])
+                        for problem_key in ['MakerNote', 'UserComment']:
+                            if problem_key in exif_data.keys():
+                                try:
+                                    unicode(exif_data[problem_key], 'utf-8')
+                                except UnicodeDecodeError:
+                                    del(exif_data[problem_key])
                         image_information = bigalgae.analyse_image(image_filepath)
 
                         if image_information[0] == 0:
@@ -304,9 +305,9 @@ def experiment(reactor_id, experiment_id):
                         elif image_information[0] == 2:
                             image_binary_info = {}
                         elif image_information[0] == 1:
-                            
+
                             global_var_collection = db[GLOBAL_VARIABLE_COLLECTION]
-                            
+
                             global_var_collection.find_and_modify({'_id': 'failed_image_analysis'},
                                                                   {'$push': {'list':
                                                                         {'file_name': saved_filename , \
@@ -315,8 +316,8 @@ def experiment(reactor_id, experiment_id):
                                                                         'od750': od750_list, \
                                                                         'upload_datetime': utc, \
                                                                         'original_filename': original_filename, \
-                                                                        'exif': exif_data}}})                            
-                            
+                                                                        'exif': exif_data}}})
+
                             return(render_template('ExperimentPage.html', \
                                                 reactor_id=reactor_id, \
                                                 experiment_dict=experiment_dict,
@@ -324,7 +325,7 @@ def experiment(reactor_id, experiment_id):
                                                 twitter_thanks=False,
                                                 incorrect_password_dry_mass=False,
                                                 analyse_image_output=image_information))
-                            
+
                         reactor = reactors.find_and_modify({'_id': reactor_id, \
                                                 'experiments': {'$elemMatch': {'id': experiment_id}}}, \
                                                 {'$push': {'experiments.$.measurements': \
