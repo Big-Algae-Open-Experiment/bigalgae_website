@@ -24,7 +24,7 @@ def returnNewID(global_variable_collection):
     new = global_variable_collection.find_and_modify({'_id': 'counter'}, \
                                                      {'$inc': {'seq': 1}}, \
                                                      new=True)
-    return(str(new['seq']).zfill(4))
+    return(str(int(new['seq'])).zfill(4))
 
 UPLOAD_FOLDER = '/var/www/html/baoe-app/images'
 ALLOWED_EXTENSIONS = set(['jpeg', 'jpg', 'png', 'JPG', 'JPEG'])
