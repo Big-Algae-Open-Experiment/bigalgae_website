@@ -59,64 +59,69 @@ h1, h2, h3, h4, h5, h6, .navbar{
 
 /* BUTTON SUCCESS CHANGES */
 
-.btn-success {
-    color:#333; /* changed from #fff*/
-    background-color:#2bff12; /* changed from #5cb85c*/
-    border-color:#19fa00 /* changed from #4cae4c*/
+.btn-algae {
+    color:#333/**/;
+    background-color:#2bff12/**/;
+    border-color:#19fa00/**/
 }
-.btn-success.focus,
-.btn-success:focus {
-    color:#333; /* changed from #fff*/
-    background-color:#449d44;
-    border-color:#255625
+.btn-algae.focus,
+.btn-algae:focus {
+    color:#333/**/;
+    background-color:#16e000/**/;
+    border-color:#0c7a00/**/
 }
-.btn-success:hover {
-    color:#333; /* changed from #fff*/
-    background-color:#449d44;
-    border-color:#398439
+.btn-algae:hover {
+    color:#333/**/;
+    background-color:#16e000/**/;
+    border-color:#13bd00/**/
 }
-.btn-success.active,
-.btn-success:active,
-.open>.dropdown-toggle.btn-success {
-    color:#333; /* changed from #fff*/
-    background-color:#449d44;
-    border-color:#398439
+.btn-algae.active,
+.btn-algae:active,
+.open>.dropdown-toggle.btn-algae {
+    color:#333/**/;
+    background-color:#16e000/**/;
+    border-color:#13bd00/**/
 }
-.btn-success.active.focus,
-.btn-success.active:focus,
-.btn-success.active:hover,
-.btn-success:active.focus,
-.btn-success:active:focus,
-.btn-success:active:hover,
-.open>.dropdown-toggle.btn-success.focus,
-.open>.dropdown-toggle.btn-success:focus,
-.open>.dropdown-toggle.btn-success:hover {
-    color:#333; /* changed from #fff*/
-    background-color:#398439;
-    border-color:#255625
+.btn-algae.active.focus,
+.btn-algae.active:focus,
+.btn-algae.active:hover,
+.btn-algae:active.focus,
+.btn-algae:active:focus,
+.btn-algae:active:hover,
+.open>.dropdown-toggle.btn-algae.focus,
+.open>.dropdown-toggle.btn-algae:focus,
+.open>.dropdown-toggle.btn-algae:hover {
+    color:#333/**/;
+    background-color:#13bd00/**/;
+    border-color:#0c7a00/**/
 }
-.btn-success.disabled,
-.btn-success.disabled.active,
-.btn-success.disabled.focus,
-.btn-success.disabled:active,
-.btn-success.disabled:focus,
-.btn-success.disabled:hover,
-.btn-success[disabled],
-.btn-success[disabled].active,
-.btn-success[disabled].focus,
-.btn-success[disabled]:active,
-.btn-success[disabled]:focus,
-.btn-success[disabled]:hover,
-fieldset[disabled] .btn-success,
-fieldset[disabled] .btn-success.active,
-fieldset[disabled] .btn-success.focus,
-fieldset[disabled] .btn-success:active,
-fieldset[disabled] .btn-success:focus,
-fieldset[disabled] .btn-success:hover {
-    background-color:#2bff12; /* changed from #5cb85c*/
-    border-color:#19fa00 /* changed from #4cae4c*/
+.btn-algae.active,
+.btn-algae:active,
+.open>.dropdown-toggle.btn-algae {
+    background-image:none
 }
-.btn-success .badge {
-    color:#5cb85c;
+.btn-algae.disabled,
+.btn-algae.disabled.active,
+.btn-algae.disabled.focus,
+.btn-algae.disabled:active,
+.btn-algae.disabled:focus,
+.btn-algae.disabled:hover,
+.btn-algae[disabled],
+.btn-algae[disabled].active,
+.btn-algae[disabled].focus,
+.btn-algae[disabled]:active,
+.btn-algae[disabled]:focus,
+.btn-algae[disabled]:hover,
+fieldset[disabled] .btn-algae,
+fieldset[disabled] .btn-algae.active,
+fieldset[disabled] .btn-algae.focus,
+fieldset[disabled] .btn-algae:active,
+fieldset[disabled] .btn-algae:focus,
+fieldset[disabled] .btn-algae:hover {
+    background-color:#2bff12/**/;
+    border-color:#19fa00/**/
+}
+.btn-algae .badge {
+    color:#2bff12/**/;
     background-color:#fff
 }
