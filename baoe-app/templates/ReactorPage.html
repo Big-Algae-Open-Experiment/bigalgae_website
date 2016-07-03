@@ -17,11 +17,17 @@
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
                 disableDefaultUI: true
             });
-            
+            var algae_pin_image = {
+                url: "{{ url_for('static', filename='img/algae_pin.png') }}",
+                scaledSize: new google.maps.Size(50, 50),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(25, 25),
+            };
             new google.maps.Marker({
-                    map: map,
-                    title: "{{ reactor['location'] }}",
-                    position: location_position
+                map: map,
+                title: "{{ reactor['location'] }}",
+                position: location_position,
+                icon: algae_pin_image
             });
             
         }
@@ -94,7 +100,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-9">
-                <h2>Reactor {{ reactor['_id'] }}</h2>
+                <h2 class='green'>Reactor {{ reactor['_id'] }}</h2>
             </div> 
         </div>
         <div class="row">

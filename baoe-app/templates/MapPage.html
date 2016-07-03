@@ -1,5 +1,5 @@
 {% extends "Base.html" %}
-{% block title %}Register - Big Algae Open Experiment{% endblock %}
+{% block title %}Map - Big Algae Open Experiment{% endblock %}
 {% block head %}
     {{ super() }}
     <style type="text/css">
@@ -30,7 +30,7 @@
                     contentString = contentString +
                         '<div id="content">'+
                         '<div id="siteNotice"></div>'+
-                        '<a href="' + reactor.reactor_url + '"> <h3>Bioreactor ' + reactor._id + ' </h3></a>'+
+                        '<a class="green" href="' + reactor.reactor_url + '"> <h3>Bioreactor ' + reactor._id + ' </h3></a>'+
                         '<h4>Team Name: ' + reactor.name + '</h4>' +
                         '<h4>Location: ' + reactor.location + '</h4>' +
                         '<h4>Number of experiments: ' + reactor.experiment_number + '</h4>' +
@@ -47,10 +47,17 @@
                 } else if (reactor_groups[reactor_group].length > 1) {
                     var title_string = reactor_groups[reactor_group].length.toString() + ' bioreactors';
                 }
+                var algae_pin_image = {
+                    url: "{{ url_for('static', filename='img/algae_pin.png') }}",
+                    scaledSize: new google.maps.Size(50, 50),
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(25, 25),
+                };
                 var marker = new google.maps.Marker({
                     map: map,
                     position: reactor_position,
-                    title: title_string
+                    title: title_string,
+                    icon: algae_pin_image
                 });
                 // Mousedown instead of click to make it mobile friendly http://goo.gl/yIQ3sY
                 marker.addListener('mousedown', function() {

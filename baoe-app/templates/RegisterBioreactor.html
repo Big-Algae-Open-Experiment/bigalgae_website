@@ -26,7 +26,12 @@
                 marker.setMap(null);
             });
             markers = [];
-
+            var algae_pin_image = {
+                url: "{{ url_for('static', filename='img/algae_pin.png') }}",
+                scaledSize: new google.maps.Size(50, 50),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(25, 25),
+            };
             // For each place, get the icon, name and location.
             var bounds = new google.maps.LatLngBounds();
             places.forEach(function(place) {
@@ -35,7 +40,8 @@
                 markers.push(new google.maps.Marker({
                     map: map,
                     title: place.name,
-                    position: place.geometry.location
+                    position: place.geometry.location,
+                    icon: algae_pin_image
                 }));
 
                 if (place.geometry.viewport) {

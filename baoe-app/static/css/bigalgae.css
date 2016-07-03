@@ -56,6 +56,9 @@ h1, h2, h3, h4, h5, h6, .navbar{
 .green {
     color: #2BFF12;
 }
+a.green:hover {
+    color: #16e000;
+}
 
 .green_underline {
     color: #2BFF12;
