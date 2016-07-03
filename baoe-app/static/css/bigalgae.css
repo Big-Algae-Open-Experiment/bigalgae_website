@@ -57,6 +57,15 @@ h1, h2, h3, h4, h5, h6, .navbar{
     color: #2BFF12;
 }
 
+.green_underline {
+    color: #2BFF12;
+    text-decoration: underline;
+}
+.title_span {
+    color: #333;
+    text-decoration: none;
+}
+
 /* BUTTON SUCCESS CHANGES */
 
 .btn-algae {
