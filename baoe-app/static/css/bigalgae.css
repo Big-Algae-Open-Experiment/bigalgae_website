@@ -69,6 +69,26 @@ a.green:hover {
     text-decoration: none;
 }
 
+
+.algae-logo {
+    width: 80px;
+}
+
+.navbar-brand,
+.navbar-nav li a {
+    line-height: 60px;
+    height: 60px;
+    padding-top: 0px;
+}
+.navbar-toggle {
+    margin-top: 13px;
+    margin-bottom: 13px;
+}
+
+.algae-logo-a {
+    padding-top: 5px;
+}
+
 /* BUTTON SUCCESS CHANGES */
 
 .btn-algae {
