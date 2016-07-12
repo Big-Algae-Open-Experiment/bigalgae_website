@@ -14,7 +14,7 @@
     <script>
         function addMarkersToMap(reactor_array) {
             infowindows = [];
-
+            markers = [];
             var bounds = new google.maps.LatLngBounds();
 
             var reactor_groups = {}
@@ -38,10 +38,6 @@
                 });
                 var reactor = reactor_array[reactor_groups[reactor_group][0]];
                 var reactor_position = {lat: reactor.latitude, lng: reactor.longitude};
-                var infowindow = new google.maps.InfoWindow({
-                    content: contentString,
-                    maxWidth: 250
-                });
                 if (reactor_groups[reactor_group].length == 1) {
                     var title_string = 'Bioreactor ' + reactor._id;
                 } else if (reactor_groups[reactor_group].length > 1) {
@@ -59,14 +55,21 @@
                     title: title_string,
                     icon: algae_pin_image
                 });
+                var infowindow = new google.maps.InfoWindow({
+                    content: contentString,
+                    maxWidth: 250
+                });
+                infowindows.push(infowindow);
+                markers.push(marker);
                 // Mousedown instead of click to make it mobile friendly http://goo.gl/yIQ3sY
                 marker.addListener('mousedown', function() {
                     for (i = 0; i < infowindows.length; i++) {
                         infowindows[i].close();
+                        if (markers[i] == this) {
+                            infowindows[i].open(map, markers[i]);
+                        }
                     }
-                    infowindow.open(map, marker);
                 });
-                infowindows.push(infowindow);
                 bounds.extend(new google.maps.LatLng(reactor_position.lat, reactor_position.lng));
             };
             map.fitBounds(bounds);
