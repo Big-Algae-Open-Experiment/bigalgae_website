@@ -10,6 +10,63 @@
     <script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+    <script>
+        $(window).on('resize', function() {
+            formatTitle();
+        });
+        $(document).ready(function() {
+            formatTitle();
+        });
+        var formatTitle = function() {
+            if ($('.device-sm').is(':visible') || $('.device-xs').is(':visible')) {
+                var navbar_a = $('.navbar-brand');
+                if (navbar_a.hasClass('algae-logo-a-desktop')) {
+                    navbar_a.removeClass('algae-logo-a-desktop');
+                }
+                if (!navbar_a.hasClass('algae-logo-a-mobile')) {
+                    navbar_a.addClass('algae-logo-a-mobile');
+                }
+                var navbar_img = navbar_a.find('img');
+                if (navbar_img.hasClass('algae-logo-desktop')) {
+                    navbar_img.removeClass('algae-logo-desktop');
+                }
+                if (!navbar_img.hasClass('algae-logo-mobile')) {
+                    navbar_img.addClass('algae-logo-mobile');
+                    navbar_img.attr('src', "{{ url_for('static', filename='img/logo_mobile.svg') }}");
+                }
+                if (!navbar_a.hasClass('mobile')) {
+                    navbar_a.addClass('mobile');
+                }
+                var navbar_nav = $('.navbar-nav');
+                if (!navbar_nav.hasClass('mobile')) {
+                    navbar_nav.addClass('mobile');
+                }
+            } else {
+                var navbar_a = $('.navbar-brand');
+                if (navbar_a.hasClass('algae-logo-a-mobile')) {
+                    navbar_a.removeClass('algae-logo-a-mobile');
+                }
+                if (!navbar_a.hasClass('algae-logo-a-desktop')) {
+                    navbar_a.addClass('algae-logo-a-desktop');
+                }
+                var navbar_img = navbar_a.find('img');
+                if (navbar_img.hasClass('algae-logo-mobile')) {
+                    navbar_img.removeClass('algae-logo-mobile');
+                }
+                if (!navbar_img.hasClass('algae-logo-desktop')) {
+                    navbar_img.addClass('algae-logo-desktop');
+                    navbar_img.attr('src', "{{ url_for('static', filename='img/logo.svg') }}");
+                }
+                if (navbar_a.hasClass('mobile')) {
+                    navbar_a.removeClass('mobile');
+                }
+                var navbar_nav = $('.navbar-nav');
+                if (navbar_nav.hasClass('mobile')) {
+                    navbar_nav.removeClass('mobile');
+                }
+            };
+        };
+    </script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bigalgae.css') }}">
     {% endblock %}
@@ -25,8 +82,8 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a href="{{ url_for('landing') }}" class="navbar-brand algae-logo-a">
-                    <img class="img-responsive algae-logo" src="{{ url_for('static', filename='img/logo.svg') }}" alt="Big Algae Open Experiment">
+                <a href="{{ url_for('landing') }}" class="navbar-brand">
+                    <img class="img-responsive" alt="Big Algae Open Experiment">
                 </a>
             </div>
             <nav class="collapse navbar-collapse" role="navigation">
@@ -52,5 +109,9 @@
         </div>
     </header>
     {% endblock %}
+    <div class="device-xs visible-xs"></div>
+    <div class="device-sm visible-sm"></div>
+    <div class="device-md visible-md"></div>
+    <div class="device-lg visible-lg"></div>
 </body>
 </html>
