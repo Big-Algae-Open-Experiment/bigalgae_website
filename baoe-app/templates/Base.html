@@ -16,6 +16,12 @@
         });
         $(document).ready(function() {
             formatTitle();
+            $('.navbar-nav').find('a').each(function() {
+                var element = $( this );
+                if (element.attr('href') == window.location.pathname) {
+                    element.addClass('green');
+                }
+            });
         });
         var formatTitle = function() {
             if ($('.device-sm').is(':visible') || $('.device-xs').is(':visible')) {
