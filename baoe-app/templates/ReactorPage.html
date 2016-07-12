@@ -113,7 +113,7 @@
                 <h4>Experiments</h4>
                 <ul>
                 {% for experiment in reactor['experiments'] %}
-                    <li><a href="{{ url_for('experiment', reactor_id=reactor['_id'], experiment_id=experiment['id']) }}">Experiment {{ experiment['id'] }}</a></li>
+                    <li><a class="green" href="{{ url_for('experiment', reactor_id=reactor['_id'], experiment_id=experiment['id']) }}">Experiment {{ experiment['id'] }}</a></li>
                 {% endfor %}
                 </ul>
                 <div class="panel-group" id="accordion">

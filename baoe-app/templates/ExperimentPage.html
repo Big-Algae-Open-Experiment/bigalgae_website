@@ -152,7 +152,7 @@
                             <div class="input-group">
                                 <span class="input-group-btn">
 
-                                    <label class="btn btn-primary" for="upload_picture">
+                                    <label class="btn btn-algae" for="upload_picture">
                                         <input type='file' style="display:none;" capture='camera' accept='image/*' name='upload_picture' id='upload_picture'>
                                     Upload Image    
                                     </label>
@@ -213,7 +213,7 @@
                 <p>By clicking on a measurement, you can add dry cell mass information to a measurement</p>
                 <ul>
                     {% for measurement in experiment_dict['measurements'] %}
-                        <li class="measurement_entry" file_name="{{ measurement['file_name'] }}"><a>{{ measurement['file_name'] }}</a>
+                        <li class="measurement_entry" file_name="{{ measurement['file_name'] }}"><a class="green">{{ measurement['file_name'] }}</a>
                         <ul>
                             <li>Uploaded: {{ measurement['upload_datetime'] }}</li>
 <!--                            <li>Cell count: {{ measurement['cell_count'] }}</li>-->
